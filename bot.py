@@ -2,7 +2,7 @@
 """
 Memecoin sinyal botu
 ====================
-Herkese açık verilerle (DexScreener + RugCheck + GoPlus) yeni/trend
+Herkese açık verilerle (DexScreener + GeckoTerminal + RugCheck + GoPlus) yeni/trend
 low-cap coinleri tarar, filtrelerden geçenleri Telegram'a bildirir.
 
 Bu bot ALIM SATIM YAPMAZ. Cüzdana, private key'e ya da paraya erişimi yoktur.
@@ -35,6 +35,21 @@ CONFIG_PATH = ROOT / "config.yaml"
 DEX = "https://api.dexscreener.com"
 RUGCHECK = "https://api.rugcheck.xyz/v1/tokens/{mint}/report"
 GOPLUS = "https://api.gopluslabs.io/api/v1/token_security/{chain_id}"
+GECKO = "https://api.geckoterminal.com/api/v2"
+GECKO_NETWORKS = {"solana": "solana", "bsc": "bsc", "base": "base", "ethereum": "eth"}
+# Havuzlarda karşı taraf olan (memecoin olmayan) tokenlar: wrapped native coinler ve stable'lar
+QUOTE_TOKENS = {a.lower() for a in (
+    "So11111111111111111111111111111111111111112",   # WSOL
+    "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",  # USDC (Solana)
+    "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",  # USDT (Solana)
+    "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",    # WBNB
+    "0x55d398326f99059fF775485246999027B3197955",    # USDT (BSC)
+    "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",    # USDC (BSC)
+    "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",    # BUSD
+    "0x4200000000000000000000000000000000000006",    # WETH (Base)
+    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",    # USDC (Base)
+    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",    # WETH (Ethereum)
+)}
 GOPLUS_CHAIN_IDS = {"bsc": "56", "base": "8453", "ethereum": "1"}
 CHAIN_LABELS = {"solana": "Solana", "bsc": "BNB Chain", "base": "Base", "ethereum": "Ethereum"}
 # FOMO'daki token sayfası yolları (solana ve bnb doğrulandı)
@@ -49,10 +64,10 @@ def log(*a):
     print(time.strftime("[%H:%M:%S]"), *a, flush=True)
 
 
-def get_json(url, params=None, retries=2, timeout=15):
+def get_json(url, params=None, retries=2, timeout=15, headers=None):
     for attempt in range(retries + 1):
         try:
-            r = session.get(url, params=params, timeout=timeout)
+            r = session.get(url, params=params, timeout=timeout, headers=headers)
             if r.status_code == 429:
                 time.sleep(3 * (attempt + 1))
                 continue
@@ -137,18 +152,59 @@ def send_telegram(text, dry_run=False):
 
 
 # ------------------------------------------------------------------ veri toplama
-def discover_candidates(chains):
-    """DexScreener'ın yeni profil ve boost listelerinden aday token adresleri."""
-    found = {}
-    for path in ("/token-profiles/latest/v1", "/token-boosts/latest/v1", "/token-boosts/top/v1"):
+def add_candidate(found, chain, addr, label):
+    if chain != "solana":
+        addr = addr.lower()  # EVM adresleri büyük/küçük harf duyarsız
+    found.setdefault(f"{chain}:{addr}", [chain, addr, set()])[2].add(label)
+
+
+def discover_dexscreener(chains, found):
+    """DexScreener'ın yeni profil ve boost listeleri (çoğu ücretli tanıtım)."""
+    sources = {"/token-profiles/latest/v1": "DexScreener profil",
+               "/token-boosts/latest/v1": "DexScreener boost",
+               "/token-boosts/top/v1": "DexScreener boost"}
+    for path, label in sources.items():
         data = get_json(DEX + path) or []
         if isinstance(data, dict):
             data = [data]
         for item in data:
             chain, addr = item.get("chainId"), item.get("tokenAddress")
             if chain in chains and addr:
-                found.setdefault(f"{chain}:{addr}", (chain, addr))
-    return list(found.values())
+                add_candidate(found, chain, addr, label)
+
+
+def discover_geckoterminal(chains, found):
+    """GeckoTerminal trend ve yeni havuzları (işlem hacmine dayalı, reklamsız)."""
+    lists = {"trending_pools": "GeckoTerminal trend", "new_pools": "GeckoTerminal yeni"}
+    for chain in chains:
+        network = GECKO_NETWORKS.get(chain)
+        if not network:
+            continue
+        for path, label in lists.items():
+            data = get_json(f"{GECKO}/networks/{network}/{path}",
+                            headers={"Accept": "application/json;version=20230302"})
+            for pool in (data or {}).get("data") or []:
+                rel = pool.get("relationships") or {}
+                base = (((rel.get("base_token") or {}).get("data") or {}).get("id") or "")
+                quote = (((rel.get("quote_token") or {}).get("data") or {}).get("id") or "")
+                # id biçimi: "<ağ>_<adres>"
+                base_addr = base.split("_", 1)[1] if "_" in base else ""
+                quote_addr = quote.split("_", 1)[1] if "_" in quote else ""
+                addr = quote_addr if base_addr.lower() in QUOTE_TOKENS else base_addr
+                if addr and addr.lower() not in QUOTE_TOKENS:
+                    add_candidate(found, chain, addr, label)
+            time.sleep(2.1)  # ücretsiz limit: dakikada 30 istek
+
+
+def discover_candidates(cfg):
+    chains = set(cfg["chains"])
+    src = cfg.get("sources") or {}
+    found = {}
+    if src.get("dexscreener", True):
+        discover_dexscreener(chains, found)
+    if src.get("geckoterminal", True):
+        discover_geckoterminal(chains, found)
+    return [(c, a, sorted(s)) for c, a, s in found.values()]
 
 
 def fetch_pairs(chain, addresses):
@@ -319,7 +375,8 @@ def format_signal(chain, addr, m, sec):
         f"Yaş: {age_text(m['age_h'])} | 24s hacim: {money(m['vol24'])}\n"
         f"Son 1s: {m['buys1']} alış / {m['sells1']} satış | 1s: {m['chg1']:+.0f}% | 24s: {m['chg24']:+.0f}%\n"
         f"Holder: {holders} | Top10: {top10}\n"
-        f"Güvenlik: {html.escape(sec.get('summary', '?'))}{flags}\n\n"
+        f"Güvenlik: {html.escape(sec.get('summary', '?'))}{flags}\n"
+        f"Kaynak: {html.escape(', '.join(m.get('sources') or ['?']))}\n\n"
         f"<code>{addr}</code>\n"
         f"{links(chain, addr, m['dex_url'])}\n\n"
         f"<i>Otomatik tarama sonucudur, yatırım tavsiyesi değildir.</i>"
@@ -333,10 +390,11 @@ def run_scan(cfg, state, dry_run=False):
     cooldown = cfg["cooldown_hours"] * 3600
     state["seen"] = {k: t for k, t in state["seen"].items() if now - t < max(cooldown, 3 * 86400)}
 
-    candidates = discover_candidates(set(cfg["chains"]))
+    candidates = discover_candidates(cfg)
     log(f"{len(candidates)} aday bulundu")
+    src_of = {f"{c}:{a}": s for c, a, s in candidates}
     by_chain = {}
-    for chain, addr in candidates:
+    for chain, addr, _ in candidates:
         if now - state["seen"].get(f"{chain}:{addr}", 0) < cooldown:
             continue
         by_chain.setdefault(chain, []).append(addr)
@@ -354,6 +412,7 @@ def run_scan(cfg, state, dry_run=False):
             if why:
                 reasons[why] = reasons.get(why, 0) + 1
                 continue
+            m["sources"] = src_of.get(f"{chain}:{addr}", [])
             passed.append((chain, addr, m))
 
     # En güçlü alış baskısı olanlar önce
@@ -413,7 +472,7 @@ def run_report(cfg, state, dry_run=False):
 
     text = (
         f"<b>Günlük rapor - son {cfg['report_lookback_days']} gün</b>\n"
-        f"Sinyal: {len(rows)} | Yükselen: {up} | Düşen: {len(rows) - up}\n"
+        f"Sinyal: {len(rows)} | Yükselen: {up} | Düşen: {sum(1 for c in changes if c < 0)}\n"
         f"Medyan değişim: {statistics.median(changes):+.0f}%\n"
         f"Her sinyale eşit $20 koyulsaydı: {sum(20 * (1 + c / 100) for c in changes):.0f}$ "
         f"(yatırılan {20 * len(rows)}$, ücretler hariç)\n\n"
