@@ -1,0 +1,58 @@
+name: Memecoin sinyal botu
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # her 10 dakikada bir tarama
+    - cron: "0 6 * * *"      # her gün 09:00 (Türkiye) performans raporu
+  workflow_dispatch:          # Actions sekmesinden elle çalıştırma
+    inputs:
+      mode:
+        description: "Mod"
+        type: choice
+        options: [scan, report, test]
+        default: test
+
+concurrency:
+  group: sinyal-bot
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Durumu geri yükle
+        uses: actions/cache/restore@v4
+        with:
+          path: state
+          key: state-${{ github.run_id }}
+          restore-keys: state-
+
+      - name: Botu çalıştır
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          INPUT_MODE: ${{ github.event.inputs.mode }}
+          SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          MODE="$INPUT_MODE"
+          if [ -z "$MODE" ]; then
+            if [ "$SCHEDULE" = "0 6 * * *" ]; then MODE=report; else MODE=scan; fi
+          fi
+          python bot.py --mode "$MODE"
+
+      - name: Durumu kaydet
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: state
+          key: state-${{ github.run_id }}
