@@ -1,12 +1,15 @@
 # Memecoin Sinyal Botu
 
-Her 10 dakikada bir DexScreener'daki yeni ve trend coinleri tarar. Filtrelerden ve güvenlik kontrolünden geçenleri Telegram'a bildirir. Her sabah 09:00'da da geçmiş sinyallerin performans raporunu gönderir.
+Her 10 dakikada bir DexScreener ve GeckoTerminal'daki yeni ve trend coinleri tarar. Filtrelerden ve güvenlik kontrolünden geçenleri Telegram'a bildirir. Her sabah 09:00'da da geçmiş sinyallerin performans raporunu gönderir.
 
 > **Bu bot alım satım yapmaz.** Cüzdanına, private key'ine ya da paraya erişimi yoktur. Sadece bildirim gönderir, karar ve işlem tamamen sende.
 
 ## Nasıl çalışır
 
-1. **Aday bulma:** DexScreener'ın yeni token profilleri ve "boost" listeleri (Solana, BNB, Base).
+1. **Aday bulma:** Solana, BNB ve Base ağlarında iki kaynak taranır:
+   - **DexScreener:** yeni token profilleri ve "boost" listeleri. Bunlar çoğunlukla ekibin para ödeyerek yaptığı tanıtımlar.
+   - **GeckoTerminal:** trend havuzlar (en çok işlem görenler) ve yeni açılan havuzlar. Reklamsız, gerçek işlem hacmine dayalı.
+   Her bildirimde coinin hangi kaynaktan geldiği yazar.
 2. **Piyasa filtresi:** MC, likidite, likidite/MC oranı, hacim, yaş, 24 saatlik değişim, son 1 saatteki alış/satış dengesi.
 3. **Güvenlik filtresi:**
    - Solana için RugCheck: mint/freeze yetkisi, "danger" seviyeli riskler, holder sayısı.
