@@ -10,6 +10,11 @@ chains:
   - bsc
   - base
 
+# Aday coin kaynakları (true = açık, false = kapalı)
+sources:
+  dexscreener: true      # yeni profil ve boost listeleri (çoğunlukla ücretli tanıtım)
+  geckoterminal: true    # trend ve yeni havuzlar (işlem hacmine dayalı, reklamsız)
+
 # --- Piyasa filtreleri ---------------------------------------
 market_cap_min: 100000        # $100K
 market_cap_max: 10000000      # $10M
