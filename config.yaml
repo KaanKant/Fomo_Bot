@@ -1,0 +1,37 @@
+# ------------------------------------------------------------
+#  Memecoin sinyal botu - ayarlar
+#  Bu dosyayı GitHub'da düzenleyerek filtreleri değiştirebilirsin.
+#  Değişiklik bir sonraki çalışmada (≈10 dk) devreye girer.
+# ------------------------------------------------------------
+
+# Taranacak ağlar (DexScreener adları): solana, bsc, base
+chains:
+  - solana
+  - bsc
+  - base
+
+# --- Piyasa filtreleri ---------------------------------------
+market_cap_min: 100000        # $100K
+market_cap_max: 10000000      # $10M
+liquidity_min: 25000          # en az $25K likidite
+liquidity_to_mc_min: 0.03     # likidite / MC en az %3
+volume_24h_min: 50000         # 24 saatlik hacim en az $50K
+age_hours_min: 1              # 1 saatten genç coinleri atla (en riskli dönem)
+age_hours_max: 336            # 14 günden yaşlıları atla
+price_change_24h_max: 300     # 24 saatte %300'den fazla uçmuşsa atla (zirve riski)
+price_change_24h_min: -50     # 24 saatte %50'den fazla düşmüşse atla
+h1_buy_sell_ratio_min: 1.0    # son 1 saatte alış sayısı >= satış sayısı
+h1_txns_min: 30               # son 1 saatte en az 30 işlem (ölü coinleri ele)
+
+# --- Güvenlik filtreleri -------------------------------------
+# Solana: RugCheck  |  BSC/Base: GoPlus
+require_security_check: true  # güvenlik verisi alınamazsa coini atla
+top10_max_pct: 30             # (BSC/Base) ilk 10 holder en fazla %30
+holders_min: 300              # bilinen holder sayısı en az 300
+max_tax_pct: 10               # (BSC/Base) alış/satış vergisi en fazla %10
+rugcheck_block_danger: true   # (Solana) "danger" seviyeli risk varsa atla
+
+# --- Bildirim ayarları ---------------------------------------
+max_alerts_per_run: 5         # bir taramada en fazla 5 bildirim (spam önleme)
+cooldown_hours: 24            # aynı coin için 24 saat içinde tekrar bildirim yok
+report_lookback_days: 7       # günlük raporda son 7 günün sinyalleri
