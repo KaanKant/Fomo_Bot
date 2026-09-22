@@ -40,3 +40,4 @@ rugcheck_block_danger: true   # (Solana) "danger" seviyeli risk varsa atla
 max_alerts_per_run: 5         # bir taramada en fazla 5 bildirim (spam önleme)
 cooldown_hours: 24            # aynı coin için 24 saat içinde tekrar bildirim yok
 report_lookback_days: 7       # günlük raporda son 7 günün sinyalleri
+report_hour: 9                # rapor saati (Türkiye). Bu saatten sonraki ilk taramada gönderilir
