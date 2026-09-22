@@ -23,6 +23,7 @@ import os
 import statistics
 import sys
 import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import requests
@@ -484,6 +485,13 @@ def run_report(cfg, state, dry_run=False):
     return send_telegram(text, dry_run)
 
 
+def report_due(cfg, state):
+    """Rapor saati geçtiyse ve bugün rapor gönderilmediyse True (Türkiye saati, UTC+3)."""
+    now_tr = datetime.now(timezone.utc) + timedelta(hours=3)
+    today = now_tr.strftime("%Y-%m-%d")
+    return now_tr.hour >= cfg.get("report_hour", 9) and state.get("last_report") != today, today
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", default="scan", choices=["scan", "report", "test"])
@@ -499,8 +507,14 @@ def main():
     try:
         if args.mode == "scan":
             run_scan(cfg, state, args.dry_run)
+            # GitHub zamanlanmış çalıştırmaları bazen atlıyor; rapor saati geçtiyse
+            # ve bugün rapor gitmediyse taramanın ardından raporu da gönder.
+            due, today = report_due(cfg, state)
+            if due and run_report(cfg, state, args.dry_run):
+                state["last_report"] = today
         else:
-            run_report(cfg, state, args.dry_run)
+            if run_report(cfg, state, args.dry_run):
+                state["last_report"] = report_due(cfg, state)[1]
     finally:
         save_state(state)
 
