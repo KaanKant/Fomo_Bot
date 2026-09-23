@@ -144,8 +144,7 @@ def send_telegram(text, dry_run=False):
                   "disable_web_page_preview": True},
             timeout=15,
         )
-        if not r.ok:
-            log("Telegram hatası:", r.status_code, r.text[:200])
+        log("Telegram yanıtı:", r.status_code, "" if r.ok else r.text[:200])
         return r.ok
     except requests.RequestException as e:
         log("Telegram hatası:", e)
@@ -449,7 +448,9 @@ def run_report(cfg, state, dry_run=False):
     since = now - cfg["report_lookback_days"] * 86400
     sigs = [s for s in state["signals"] if s["ts"] >= since and s.get("price")]
     if not sigs:
-        return send_telegram(f"<b>Günlük rapor</b>\nSon {cfg['report_lookback_days']} günde sinyal yok.", dry_run)
+        ok = send_telegram(f"<b>Günlük rapor</b>\nSon {cfg['report_lookback_days']} günde sinyal yok.", dry_run)
+        log(f"Rapor {'gönderildi' if ok else 'GÖNDERİLEMEDİ'} (kayıtlı sinyal yok)")
+        return ok
 
     by_chain = {}
     for s in sigs:
@@ -482,7 +483,9 @@ def run_report(cfg, state, dry_run=False):
     if len(rows) > 5:
         text += "\n\n<b>En kötü</b>\n" + "\n".join(line(s, c) for s, c in rows[max(5, len(rows) - 5):][::-1])
     text += "\n\n<i>Fiyatı artık bulunamayan coinler -%100 sayılır.</i>"
-    return send_telegram(text, dry_run)
+    ok = send_telegram(text, dry_run)
+    log(f"Rapor {'gönderildi' if ok else 'GÖNDERİLEMEDİ'} ({len(rows)} sinyal)")
+    return ok
 
 
 def report_due(cfg, state):
