@@ -55,3 +55,24 @@ cooldown_hours: 24            # aynı coin için 24 saat içinde tekrar bildirim
 report_lookback_days: 7       # günlük raporda son 7 günün sinyalleri
 report_hour: 9                # rapor saati (Türkiye). Bu saatten sonraki ilk taramada gönderilir
 track_days: 14                # sinyaller bu kadar gün fiyat takibinde kalır (zirve ölçümü)
+
+# --- ERKEN GİRİŞ kategorisi (yüksek risk) --------------------
+# Yeni doğmuş coinlerde "organik erken ilgi" arar: kısa sürede çok sayıda
+# FARKLI alıcı + temiz kontrat + küçük insider/bundle payı.
+erken:
+  aktif: true
+  chains: [solana]            # güvenlik kontrolü şimdilik sadece Solana
+  age_min_minutes: 15         # 15 dakikadan genç coinlere bakma (veri oturmamış)
+  age_max_hours: 12           # 12 saatten yaşlıysa bu kategori değil
+  mc_min: 50000               # $50K
+  mc_max: 2000000             # $2M
+  liq_min: 15000              # en az $15K likidite
+  liq_to_mc_min: 0.05         # likidite / MC en az %5
+  vol_h1_min: 20000           # son 1 saatte en az $20K hacim
+  buyers15_min: 40            # son 15 dakikada en az 40 FARKLI alıcı
+  buyers_sellers_min: 1.3     # alıcı sayısı satıcının en az 1.3 katı
+  lp_locked_min: 90           # LP en az %90 kilitli/yakılmış
+  insider_max_pct: 15         # RugCheck insider/bundle ağı arzın en fazla %15'i
+  creator_max_pct: 5          # coini çıkaran cüzdan en fazla %5
+  max_alerts_per_run: 2       # taramada en fazla 2 erken giriş bildirimi
+  cooldown_hours: 12          # aynı coin 12 saat içinde tekrar bildirilmez
