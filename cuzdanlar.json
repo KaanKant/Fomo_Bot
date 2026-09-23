@@ -1,0 +1,54 @@
+{
+ "tarih": "2026-09-23T18:42:18.294094+00:00",
+ "kazananlar": [
+  {
+   "mint": "8HbGFeuB4tcdWp2KwjvTW6nSoyoEa1VUoBsaZjzKPYdd",
+   "name": "MuseAI / SOL",
+   "gain": 1435.806,
+   "mc": 11892157.5958672
+  },
+  {
+   "mint": "C3QYkeYv8Q9zgrxKxyn2DkXZgNCn66998MhVh9rxMaLG",
+   "name": "JEANPHIL / SOL",
+   "gain": 1233.946,
+   "mc": 1707033.75511337
+  },
+  {
+   "mint": "HaYRgD7rjwj1AwoWjafokj4196sufYm4vKFamLZVpump",
+   "name": "ARCHIBROWN / SOL",
+   "gain": 714.384,
+   "mc": 396225.4152
+  },
+  {
+   "mint": "GxWNbw3JFZVUnFSvUw11FTajEzG6yzSSrJq5nQiMrYnf",
+   "name": "OpenAI / SOL",
+   "gain": 343.915,
+   "mc": 3240522.731
+  },
+  {
+   "mint": "MboMMGXjGDi45hfjCVzYru32kEM5nw7VzCqCofZpump",
+   "name": "KCAT / SOL",
+   "gain": 173.353,
+   "mc": 361431.076187198
+  },
+  {
+   "mint": "HTmQz7My6MehV7bjhJ6jde8nDND1yvsz68d24LP7YgUQ",
+   "name": "GP / SOL",
+   "gain": 105.526,
+   "mc": 24585126.8
+  },
+  {
+   "mint": "GTBxUiw6wJdmmkCGZgRHLyYxqu1vG4KtRpeox6yDpump",
+   "name": "JEANPHIL / SOL",
+   "gain": 87.536,
+   "mc": 5943472.323
+  },
+  {
+   "mint": "AMqCCrGTsmdK6a8r9BGDcnoxHFr5kVe5JfM7JYrfjFz7",
+   "name": "Apple / SOL",
+   "gain": 82.463,
+   "mc": 1759202.05699869
+  }
+ ],
+ "cuzdanlar": []
+}
