@@ -32,10 +32,10 @@ WSOL = "So11111111111111111111111111111111111111112"
 MIN_GAIN_24H = 80          # kazanan sayılmak için 24 saatlik artış (%)
 MIN_MC, MAX_MC = 3e5, 8e7  # kazanan coinin market cap aralığı
 MAX_TOKENS = 8             # en fazla kaç kazanan coin incelensin
-MAX_SIG_PAGES = 30         # token başına en fazla kaç sayfa imza (1000/sayfa)
+MAX_SIG_PAGES = 150        # token başına en fazla kaç sayfa imza (1000/sayfa)
 EARLY_TX = 300             # her coinin ilk kaç işlemine bakılsın
 EARLY_MINUTES = 45         # ilk işlemden sonraki kaç dakika "erken" sayılsın
-MIN_SOL = 0.3              # bu kadar SOL'den küçük alımlar sayılmaz
+MIN_SOL = 0.15             # bu kadar SOL'den küçük alımlar sayılmaz
 MIN_TOKENS_HIT = 2         # kaç farklı kazananda çıkarsa listeye girsin
 
 ROOT = Path(__file__).resolve().parent
@@ -103,6 +103,9 @@ def find_winners():
 
 
 # --- 2. bir coinin en eski işlemleri -----------------------------------
+TESHIS = []
+
+
 def oldest_signatures(mint):
     """Mint hesabının imzalarını sonundan başa doğru toplar, en eskileri döndürür."""
     sigs, before = [], None
@@ -116,8 +119,10 @@ def oldest_signatures(mint):
         sigs.extend(res)
         before = res[-1]["signature"]
         if len(res) < 1000:
+            TESHIS.append(f"{mint[:8]}: toplam {len(sigs)} işlem, en eskilere ulaşıldı")
             return sigs[-EARLY_TX:][::-1]  # en eskiler, eskiden yeniye
         time.sleep(0.15)
+    TESHIS.append(f"{mint[:8]}: {len(sigs)}+ işlem, limit doldu - ATLANDI")
     log(f"  {mint[:8]}: çok işlemli ({len(sigs)}+), atlanıyor")
     return None
 
@@ -192,6 +197,7 @@ def main():
             continue
         buys = parse_buyers(sigs, w["mint"])
         if not buys:
+            TESHIS.append(f"  {w['name']}: imza var ama alım çözümlenemedi")
             log("  erken alım bulunamadı")
             continue
         t0 = min(b["ts"] for b in buys if b["ts"]) or 0
@@ -203,6 +209,8 @@ def main():
         for wallet, (sol, mins) in agg.items():
             hits[wallet].append({"coin": w["name"], "sol": round(sol, 2),
                                  "dk": round(mins, 1), "gain": round(w["gain"])})
+        TESHIS.append(f"  {w['name']}: {len(buys)} alım, ilk {EARLY_MINUTES} dk içinde "
+                      f"{len(early)} alım / {len(agg)} cüzdan")
         log(f"  {len(early)} erken alım, {len(agg)} farklı cüzdan")
 
     repeat = {k: v for k, v in hits.items() if len(v) >= MIN_TOKENS_HIT}
@@ -233,7 +241,8 @@ def main():
         md.append(f"| `{r['wallet']}` | {r['n']} | {r['toplam_sol']} | "
                   f"{r['span_h'] if r['span_h'] is not None else '?'} saat | "
                   f"{'EVET' if r['bot'] else 'hayır'} | {det} |")
-    md += ["", f"Bot olmayan aday sayısı: **{len(temiz)}**", ""]
+    md += ["", f"Bot olmayan aday sayısı: **{len(temiz)}**", "",
+           "## Teşhis", ""] + [f"- {t}" for t in TESHIS] + [""]
     (ROOT / "CUZDAN-RAPORU.md").write_text("\n".join(md), encoding="utf-8")
     log(f"Rapor yazıldı: {len(rows)} satır, {len(temiz)} bot değil")
 
