@@ -1,80 +1,82 @@
 # Erken giriş teşhisi
 
-Tarih: 2026-09-23 19:25 UTC
-İncelenen havuz: 97
+Tarih: 2026-09-23 19:28 UTC
+İncelenen havuz: 117
 
 | Coin | Yaş (dk) | MC | Likidite | Lik/MC | 1s hacim | 15dk alıcı | satıcı | 5dk alıcı | Sonuç |
 |---|---|---|---|---|---|---|---|---|---|
-| discat | 4 | $102.3K | $26.9K | %26 | $76.7K | 772 | 104 | 772 | yaş aralık dışı |
-| STONK | 60993 | $247.85M | $2.73M | %1 | $589.1K | 685 | 528 | 106 | yaş aralık dışı |
-| ZEC | 482078 | $153.89M | $2.96M | %2 | $716.5K | 640 | 454 | 615 | yaş aralık dışı |
-| CMC | 4 | $97.6K | $25.0K | %26 | $28.0K | 596 | 34 | 596 | yaş aralık dışı |
-| OTC | 37792 | $7.67M | $613.1K | %8 | $51.5K | 495 | 188 | 129 | yaş aralık dışı |
-| FHC | 5 | $14.2K | $6.5K | %46 | $9.4K | 381 | 112 | 181 | MC aralık dışı |
-| TRIAL | 4 | $10.8K | $7.2K | %67 | $38.8K | 323 | 332 | 323 | yaş aralık dışı |
-| 人生好物 | 5 | $1 | $309 | %27257 | $18.7K | 215 | 208 | 207 | MC aralık dışı |
-| PUMPCAT | 6656 | $260.8K | $56.7K | %22 | $59.2K | 164 | 169 | 37 | yaş aralık dışı |
-| Lordi | 5 | $3.2K | $2.6K | %80 | $25.1K | 150 | 148 | 3 | MC aralık dışı |
-| Bonk | 1693724 | $305.58M | $412.4K | %0 | $81.2K | 120 | 125 | 10 | yaş aralık dışı |
-| GP | 9534 | $26.56M | $864.2K | %3 | $307.7K | 117 | 101 | 29 | yaş aralık dışı |
-| fade | 2 | $12.6K | $7.2K | %57 | $10.6K | 112 | 44 | 112 | yaş aralık dışı |
-| Amish | 2 | $45.1K | $19.5K | %43 | $50 | 100 | 11 | 100 | yaş aralık dışı |
-| PEER | 4 | $6.9K | $4.8K | %70 | $9.4K | 96 | 40 | 96 | yaş aralık dışı |
-| KIDS | 4 | $3.3K | $2.7K | %83 | $35.6K | 93 | 98 | 93 | yaş aralık dışı |
-| TART | 2 | $56.2K | $52.5K | %93 | $2.2K | 92 | 75 | 92 | yaş aralık dışı |
-| CACKLECAT | 2 | $58.5K | $21.3K | %36 | $6.5K | 82 | 14 | 82 | yaş aralık dışı |
-| USELESS | 721742 | $296.81M | $5.79M | %2 | $129.3K | 82 | 30 | 20 | yaş aralık dışı |
-| TAKO | 2 | $55.8K | $0 | %0 | $1.9K | 77 | 54 | 77 | yaş aralık dışı |
-| LORDI | 5 | $3.2K | $2.5K | %79 | $2.9K | 77 | 26 | 68 | yaş aralık dışı |
-| CASHA | 5 | $3.2K | $2.5K | %79 | $2.8K | 72 | 32 | 72 | MC aralık dışı |
-| Munch | 5 | $1 | $1 | %232 | $1.5K | 69 | 60 | 69 | yaş aralık dışı |
-| Muse | 2 | $14.3K | $10.6K | %74 | $9.7K | 66 | 33 | 66 | yaş aralık dışı |
-| H2O | 3 | $3.3K | $4.9K | %149 | $12.2K | 64 | 66 | 64 | yaş aralık dışı |
-| STRAYS | 2 | $22.0K | $0 | %0 | $21.6K | 61 | 30 | 61 | yaş aralık dışı |
-| TART | 4 | $56.1K | $0 | %0 | $2.1K | 58 | 48 | 58 | yaş aralık dışı |
-| JEANPHIL | 5778 | $5.59M | $315.5K | %6 | $125.2K | 58 | 79 | 7 | yaş aralık dışı |
-| PAID | 11523 | $8.70M | $533.7K | %6 | $89.1K | 51 | 88 | 14 | yaş aralık dışı |
-| ARCHIBROWN | 632 | $397.0K | $58.8K | %15 | $39.5K | 44 | 45 | 3 | satış baskısı |
-| KCAT | 1982 | $246.1K | $49.3K | %20 | $53.4K | 42 | 37 | 3 | yaş aralık dışı |
-| based | 1099 | $94.6K | $31.3K | %33 | $22.4K | 40 | 33 | 1 | yaş aralık dışı |
-| SS | 2 | $4.0K | $3.6K | %92 | $1.6K | 37 | 16 | 37 | yaş aralık dışı |
-| GTVIA | 4 | $9 | $6 | %75 | $1.3K | 36 | 26 | 36 | yaş aralık dışı |
-| biketyson | 28989 | $2.01M | $198.6K | %10 | $23.9K | 36 | 16 | 10 | yaş aralık dışı |
-| punchy | 4 | $4.3K | $3.3K | %75 | $2.0K | 30 | 13 | 30 | yaş aralık dışı |
-| CATE | 85132 | $85.40M | $3.43M | %4 | $134.4K | 28 | 15 | 4 | yaş aralık dışı |
-| BUBBY | 2 | $3.5K | $2.6K | %73 | $4.3K | 26 | 20 | 26 | yaş aralık dışı |
-| ALLINU | 17188 | $8.88M | $388.6K | %4 | $43.2K | 26 | 9 | 5 | yaş aralık dışı |
-| WATER | 2 | $5.3K | $4.9K | %93 | $4.0K | 25 | 10 | 25 | yaş aralık dışı |
-| SWEEP | 1383 | $104.0K | $32.3K | %31 | $33.8K | 25 | 30 | 9 | yaş aralık dışı |
-| Amish | 2 | $3.6K | $4.3K | %118 | $5.5K | 24 | 16 | 24 | yaş aralık dışı |
-| POPSUIT | 2 | $3.2K | $2.5K | %79 | $3.9K | 18 | 18 | 18 | yaş aralık dışı |
-| PUMP | 627989 | $1.86B | $21.83M | %1 | $155.5K | 18 | 48 | 3 | yaş aralık dışı |
-| ROCKET | 5 | $5.0K | $5.0K | %100 | $3.4K | 12 | 12 | 1 | yaş aralık dışı |
-| awd | 5 | $4.0K | $1.6K | %40 | $18.4K | 11 | 11 | 1 | yaş aralık dışı |
-| TART | 4 | $0 | $1 | %168 | $137 | 10 | 4 | 10 | yaş aralık dışı |
-| TICKER | 2 | $3.2K | $2.6K | %79 | $2.1K | 9 | 9 | 9 | yaş aralık dışı |
-| BUBBY | 3 | $3.2K | $2.5K | %79 | $1.6K | 9 | 9 | 9 | yaş aralık dışı |
-| TWICK | 5 | $3.3K | $2.6K | %79 | $2.1K | 9 | 7 | 1 | yaş aralık dışı |
-| FMF | 5 | $3.3K | $2.6K | %79 | $968 | 9 | 5 | 9 | MC aralık dışı |
-| TRIAL | 2 | $258.4K | $0 | %0 | $2 | 8 | 5 | 8 | yaş aralık dışı |
-| PEPENOM | 18390 | $233.4K | $130.5K | %56 | $432 | 7 | 3 | 2 | yaş aralık dışı |
-| TCAT | 2 | $3.2K | $2.5K | %79 | $237 | 6 | 6 | 6 | yaş aralık dışı |
-| Vemru | 2 | $3.3K | $3.4K | %103 | $932 | 6 | 7 | 6 | yaş aralık dışı |
-| SENDFI | 4 | $3.2K | $2.5K | %79 | $79 | 6 | 3 | 6 | yaş aralık dışı |
-| ORANGIE | 2 | $1.5K | $316 | %21 | $262 | 5 | 3 | 5 | yaş aralık dışı |
-| GTVIM | 5 | $1.1K | $454 | %40 | $120 | 5 | 4 | 5 | yaş aralık dışı |
-| SHYFTRS | 5 | $3.2K | $3.2K | %100 | $773 | 5 | 4 | 0 | MC aralık dışı |
-| MET | 453239 | $191.70M | $3.14M | %2 | $21.3K | 5 | 10 | 2 | yaş aralık dışı |
+| ZEC | 482081 | $153.64M | $2.95M | %2 | $929.9K | 1134 | 1121 | 355 | yaş aralık dışı |
+| STONK | 60997 | $248.13M | $2.74M | %1 | $619.3K | 615 | 619 | 102 | yaş aralık dışı |
+| OTC | 37795 | $7.78M | $613.3K | %8 | $52.1K | 483 | 188 | 113 | yaş aralık dışı |
+| CMC | 3 | $87.5K | $26.9K | %31 | $25.2K | 433 | 29 | 349 | **GEÇTİ** |
+| Amish | 3 | $30.7K | $28.3K | %92 | $203.5K | 427 | 53 | 322 | **GEÇTİ** |
+| Amish | 3 | $15.3K | $24.0K | %157 | $53.9K | 240 | 100 | 183 | MC aralık dışı |
+| TRIAL | 5 | $47.7K | $20.1K | %42 | $375 | 203 | 47 | 177 | hacim düşük |
+| ALLOX | 5 | $47.7K | $20.1K | %42 | $456 | 200 | 71 | 179 | hacim düşük |
+| TAKO | 5 | $2 | $1 | %87 | $7.9K | 181 | 185 | 181 | MC aralık dışı |
+| HOWL | 3 | $58.0K | $3.2K | %5 | $8.0K | 179 | 186 | 179 | likidite düşük |
+| CURVEX | 1 | $69.5K | $17.6K | %25 | $32.9K | 168 | 106 | 168 | yaş aralık dışı |
+| TRIAL | 5 | $1 | $1 | %151 | $8.7K | 157 | 152 | 157 | MC aralık dışı |
+| ANDREW | 3 | $11.1K | $0 | %0 | $24.1K | 152 | 36 | 152 | MC aralık dışı |
+| HCATE | 5 | $5 | $3 | %51 | $8.0K | 137 | 33 | 83 | MC aralık dışı |
+| MICKEY | 5 | $332.4K | $49.6K | %15 | $14.9K | 137 | 113 | 103 | satış baskısı |
+| MUSECLAW | 3 | $19.9K | $7.9K | %40 | $19.3K | 128 | 33 | 92 | MC aralık dışı |
+| PUMPCAT | 6659 | $266.9K | $57.9K | %22 | $57.0K | 128 | 112 | 29 | yaş aralık dışı |
+| ANDREW | 4 | $3.3K | $2.6K | %79 | $7.2K | 123 | 35 | 123 | MC aralık dışı |
+| pad | 3 | $4.2K | $4.4K | %105 | $35.2K | 121 | 106 | 28 | MC aralık dışı |
+| ZEC | 3 | $50.4K | $19.7K | %39 | $202 | 118 | 47 | 98 | hacim düşük |
+| TART | 2 | $71.6K | $2.8K | %4 | $3.9K | 117 | 103 | 117 | likidite düşük |
+| 人生好物 | 2 | $50.6K | $2.5K | %5 | $3.1K | 113 | 110 | 113 | yaş aralık dışı |
+| GP | 9537 | $25.04M | $859.6K | %3 | $300.3K | 112 | 123 | 20 | yaş aralık dışı |
+| ANDREW | 2 | $11.9K | $20.6K | %173 | $10.3K | 96 | 25 | 96 | MC aralık dışı |
+| ANDREW | 5 | $3.3K | $4.2K | %129 | $3.5K | 96 | 41 | 96 | MC aralık dışı |
+| Perp4ex | 3 | $7.7K | $5.1K | %66 | $8.1K | 81 | 18 | 81 | MC aralık dışı |
+| ANDREW | 3 | $3.2K | $2.5K | %79 | $3.3K | 81 | 40 | 81 | MC aralık dışı |
+| Fnhelm | 1 | $66.5K | $118.2K | %178 | $13.1K | 72 | 12 | 72 | yaş aralık dışı |
+| Bonk | 1693727 | $309.74M | $415.4K | %0 | $75.1K | 64 | 117 | 20 | yaş aralık dışı |
+| ANDREW | 2 | $3.3K | $2.6K | %79 | $19.2K | 59 | 58 | 59 | MC aralık dışı |
+| PAID | 11526 | $8.69M | $539.5K | %6 | $92.5K | 59 | 44 | 17 | yaş aralık dışı |
+| FMICRON | 2 | $2.9K | $2.9K | %100 | $3.7K | 55 | 4 | 55 | MC aralık dışı |
+| ANDREW | 4 | $3.0K | $5.2K | %171 | $19.5K | 55 | 69 | 3 | MC aralık dışı |
+| USELESS | 721745 | $299.13M | $5.81M | %2 | $120.4K | 55 | 28 | 10 | yaş aralık dışı |
+| Medisun | 3 | $5.0K | $3.6K | %71 | $2.0K | 45 | 26 | 29 | MC aralık dışı |
+| CATE | 85136 | $86.07M | $3.44M | %4 | $133.1K | 45 | 11 | 15 | yaş aralık dışı |
+| SWEEP | 1386 | $94.2K | $30.6K | %32 | $34.5K | 43 | 28 | 25 | yaş aralık dışı |
+| JEANPHIL | 5781 | $5.60M | $311.3K | %6 | $118.7K | 37 | 59 | 10 | yaş aralık dışı |
+| biketyson | 28992 | $2.03M | $199.8K | %10 | $25.3K | 37 | 17 | 4 | yaş aralık dışı |
+| Shiloh | 2 | $3.3K | $2.7K | %80 | $9.5K | 35 | 33 | 35 | MC aralık dışı |
+| Inucoin | 5 | $3.3K | $2.6K | %79 | $4.7K | 34 | 19 | 0 | MC aralık dışı |
+| KCAT | 1986 | $242.2K | $48.8K | %20 | $52.3K | 34 | 35 | 7 | yaş aralık dışı |
+| PUMP | 627993 | $1.87B | $21.90M | %1 | $215.5K | 34 | 63 | 8 | yaş aralık dışı |
+| ARCHIBROWN | 635 | $368.6K | $56.4K | %15 | $38.7K | 33 | 42 | 5 | alıcı sayısı az |
+| ROLLOUT | 4 | $4.3K | $3.7K | %85 | $3.1K | 32 | 27 | 3 | MC aralık dışı |
+| based | 1103 | $93.8K | $30.4K | %32 | $22.0K | 27 | 32 | 3 | yaş aralık dışı |
+| Amish | 4 | $11.5K | $0 | %0 | $1.5K | 23 | 6 | 23 | MC aralık dışı |
+| ANDREW | 4 | $5.4K | $2.5K | %47 | $2.8K | 22 | 6 | 22 | MC aralık dışı |
+| PESOS | 3 | $3.2K | $2.5K | %79 | $7.3K | 20 | 21 | 20 | MC aralık dışı |
+| H₂O | 5 | $3.3K | $2.6K | %79 | $4.2K | 20 | 20 | 0 | MC aralık dışı |
+| ՍЅDC | 5 | $258.6K | $247.2K | %96 | $951 | 20 | 0 | 17 | hacim düşük |
+| ALLINU | 17192 | $8.91M | $390.0K | %4 | $37.3K | 19 | 7 | 3 | yaş aralık dışı |
+| GLOW | 2 | $6.9K | $4.9K | %71 | $2.3K | 16 | 4 | 16 | MC aralık dışı |
+| GASBACK | 2 | $3.4K | $2.7K | %79 | $790 | 13 | 10 | 13 | MC aralık dışı |
+| ANDREW | 3 | $3.6K | $2.9K | %79 | $3.8K | 12 | 10 | 12 | MC aralık dışı |
+| HI.IT | 2 | $33.6K | $8.0K | %24 | $789 | 11 | 10 | 11 | likidite düşük |
+| ANDREW | 2 | $3.4K | $2.7K | %79 | $4.6K | 11 | 10 | 11 | MC aralık dışı |
+| MET | 453242 | $192.55M | $3.14M | %2 | $24.5K | 9 | 9 | 6 | yaş aralık dışı |
+| MARLONWAYA | 3 | $3.7K | $3.6K | %98 | $668 | 8 | 7 | 0 | MC aralık dışı |
+| GTVIAC | 2 | $1.2K | $3.4K | %290 | $134 | 7 | 6 | 7 | yaş aralık dışı |
 
-## Davranış filtresini geçen: 0
+## Davranış filtresini geçen: 2
 
+- **CMC** (`Gjk9MhKG14Lwtnxzae3MQFUxALqNKPD6HdgxrYiX4Gr5`) — mint/freeze kapalı: True, LP kilitli: 79.25347817482283, insider/bundle: %0.04, dev: %0.0, holder: 802, riskler: Large Amount of LP Unlocked
+- **Amish** (`BsVHe4fMcEAoGeKHGSVaxHY3R7w8NRW52erRXCijP2xJ`) — mint/freeze kapalı: True, LP kilitli: 0.0, insider/bundle: %0.0, dev: %0.0, holder: 762, riskler: Large Amount of LP Unlocked
 
 ## Kullanılan eşikler
 
 - aktif: True
 - chains: ['solana']
-- new_pool_pages: 8
-- age_min_minutes: 5
+- new_pool_pages: 10
+- age_min_minutes: 2
 - age_max_hours: 12
 - mc_min: 30000
 - mc_max: 2000000
