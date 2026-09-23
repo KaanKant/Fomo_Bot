@@ -939,9 +939,18 @@ def run_early(cfg, state, dry_run=False):
         adaylar.append((key, p))
     adaylar.sort(key=lambda kp: -kp[1]["buyers15"])
 
+    # Günlük tavan: bu kategori çok üretken, gün içinde taşmasın
+    bugun = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    gun = state.setdefault("erken_gun", {"tarih": bugun, "adet": 0})
+    if gun.get("tarih") != bugun:
+        gun.update({"tarih": bugun, "adet": 0})
+    kalan_gun = e.get("max_alerts_per_day", 10) - gun["adet"]
+
     sent = 0
     for key, p in adaylar:
-        if sent >= e.get("max_alerts_per_run", 2):
+        if sent >= e.get("max_alerts_per_run", 1) or sent >= kalan_gun:
+            if kalan_gun <= 0:
+                reasons["günlük bildirim tavanı doldu"] = len(adaylar)
             break
         if p["chain"] != "solana":          # güvenlik kontrolü şimdilik Solana
             reasons["ağ desteklenmiyor"] = reasons.get("ağ desteklenmiyor", 0) + 1
@@ -962,11 +971,11 @@ def run_early(cfg, state, dry_run=False):
             bad = f"RugCheck riskli ({danger[0] if danger else 'rugged'})"
         elif not sec["mint_ok"]:
             bad = "mint/freeze yetkisi açık"
-        elif launchpad:
-            pass                            # LP şartı aranmaz, likidite programda
-        elif sec["lp_locked"] is None:
+        # LP kilidi SADECE launchpad dışı havuzlarda aranır; aşağıdaki insider ve
+        # dev cüzdanı kontrolleri her havuz için geçerlidir.
+        elif not launchpad and sec["lp_locked"] is None:
             bad = "LP kilit verisi yok"      # erken kategoride şüpheden yararlandırma yok
-        elif sec["lp_locked"] < e.get("lp_locked_min", 90):
+        elif not launchpad and sec["lp_locked"] < e.get("lp_locked_min", 90):
             bad = "LP kilitli değil"
         elif sec["insider_pct"] > e.get("insider_max_pct", 15):
             bad = f"insider/bundle payı yüksek (%{sec['insider_pct']:.0f})"
@@ -979,6 +988,7 @@ def run_early(cfg, state, dry_run=False):
         sec["launchpad"] = launchpad
         if send_telegram(format_early(p, sec), dry_run):
             sent += 1
+            gun["adet"] += 1
             seen[key] = now
             state.setdefault("signals", []).append({
                 "key": key, "chain": p["chain"], "addr": p["addr"], "symbol": p["name"],
