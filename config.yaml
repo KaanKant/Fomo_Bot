@@ -27,6 +27,8 @@ price_change_24h_max: 300     # 24 saatte %300'den fazla uçmuşsa atla (zirve r
 price_change_24h_min: -50     # 24 saatte %50'den fazla düşmüşse atla
 h1_buy_sell_ratio_min: 1.0    # son 1 saatte alış sayısı >= satış sayısı
 h1_txns_min: 30               # son 1 saatte en az 30 işlem (ölü coinleri ele)
+h6_buy_sell_ratio_min: 0.9    # son 6 saatte alış/satış dengesi bu oranın altına düşmesin
+max_h1_change: 60             # son 1 saatte %60'tan fazla uçmuşsa atla (tepeden giriş riski)
 
 # --- Güvenlik filtreleri -------------------------------------
 # Solana: RugCheck  |  BSC/Base: GoPlus
@@ -35,9 +37,18 @@ top10_max_pct: 30             # (BSC/Base) ilk 10 holder en fazla %30
 holders_min: 300              # bilinen holder sayısı en az 300
 max_tax_pct: 10               # (BSC/Base) alış/satış vergisi en fazla %10
 rugcheck_block_danger: true   # (Solana) "danger" seviyeli risk varsa atla
+lp_locked_min_pct: 50         # likiditenin en az %50'si kilitli/yakılmış olsun (veri varsa)
+creator_max_pct: 10           # coini çıkaran cüzdan arzın en fazla %10'unu tutsun (veri varsa)
+
+# --- Sinyal kalitesi -----------------------------------------
+score_min: 50                 # 100 üzerinden bu puanın altındakiler bildirilmez (70+ = A sinyali)
+confirm_signals: true         # iki aşamalı onay: ilk geçişte izle, ikinci geçişte bildir
+confirm_min_minutes: 15       # izlemeye alındıktan en erken bu kadar sonra bildir
+confirm_max_hours: 12         # bu süreden eskiyen izleme kaydı sıfırlanır
 
 # --- Bildirim ayarları ---------------------------------------
 max_alerts_per_run: 5         # bir taramada en fazla 5 bildirim (spam önleme)
 cooldown_hours: 24            # aynı coin için 24 saat içinde tekrar bildirim yok
 report_lookback_days: 7       # günlük raporda son 7 günün sinyalleri
 report_hour: 9                # rapor saati (Türkiye). Bu saatten sonraki ilk taramada gönderilir
+track_days: 14                # sinyaller bu kadar gün fiyat takibinde kalır (zirve ölçümü)
