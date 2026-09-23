@@ -282,6 +282,10 @@ def market_filter(m, cfg):
         return "6 saatlik satış baskısı"
     if m["chg1"] > cfg.get("max_h1_change", 60):
         return "son 1 saatte dikey yükseliş (zirve riski)"
+    # Aşırı ısınma: hacim patlamış VE fiyat zaten çok yükselmişse parti bitmiş olabilir
+    if m.get("momentum", 0) >= cfg.get("overheat_momentum", 8) \
+            and m["chg24"] >= cfg.get("overheat_chg24", 100):
+        return "aşırı ısınmış (parabolik)"
     return None
 
 
