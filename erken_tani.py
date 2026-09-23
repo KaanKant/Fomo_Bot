@@ -23,8 +23,9 @@ def main():
     e = cfg.get("erken") or {}
     pools = []
     for chain in e.get("chains", ["solana"]):
-        for path in ("new_pools", "trending_pools"):
-            pools += bot.gecko_pools(chain, path)
+        for page in range(1, int(e.get("new_pool_pages", 8)) + 1):
+            pools += bot.gecko_pools(chain, "new_pools", page)
+        pools += bot.gecko_pools(chain, "trending_pools")
 
     uniq = {}
     for p in pools:
