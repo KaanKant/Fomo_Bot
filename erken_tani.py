@@ -38,15 +38,15 @@ def main():
     md = ["# Erken giriş teşhisi", "",
           f"Tarih: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')} UTC",
           f"İncelenen havuz: {len(rows)}", "",
-          "| Coin | Yaş (dk) | MC | Likidite | Lik/MC | 1s hacim | 15dk alıcı | satıcı | 5dk alıcı | Sonuç |",
-          "|---|---|---|---|---|---|---|---|---|---|"]
+          "| Coin | DEX | Yaş (dk) | MC | Likidite | Lik/MC | 1s hacim | 15dk alıcı | satıcı | 5dk alıcı | Sonuç |",
+          "|---|---|---|---|---|---|---|---|---|---|---|"]
     for p in rows[:60]:
         why = bot.early_filter(p, e)
         if not why:
             gecenler.append(p)
         oran = (p["liq"] / p["mc"] * 100) if p["mc"] else 0
         yas = f"{p['age_min']:.0f}" if p["age_min"] is not None else "?"
-        md.append(f"| {p['name'][:18]} | {yas} | {bot.money(p['mc'])} | {bot.money(p['liq'])} | "
+        md.append(f"| {p['name'][:18]} | {p.get('dex', '?')} | {yas} | {bot.money(p['mc'])} | {bot.money(p['liq'])} | "
                   f"%{oran:.0f} | {bot.money(p['vol1'])} | {p['buyers15']} | {p['sellers15']} | "
                   f"{p['buyers5']} | {'**GEÇTİ**' if not why else why} |")
 
@@ -56,7 +56,10 @@ def main():
         if not sec:
             md.append(f"- {p['name']}: güvenlik verisi alınamadı")
             continue
-        md.append(f"- **{p['name']}** (`{p['addr']}`) — mint/freeze kapalı: {sec['mint_ok']}, "
+        lp = any(k in (p.get("dex") or "").lower() for k in e.get("launchpad_dexes", []))
+        md.append(f"- **{p['name']}** (`{p['addr']}`) — DEX: {p.get('dex')} "
+                  f"({'launchpad' if lp else 'normal DEX, LP kilidi aranır'}), "
+                  f"mint/freeze kapalı: {sec['mint_ok']}, "
                   f"LP kilitli: {sec['lp_locked']}, insider/bundle: %{sec['insider_pct']}, "
                   f"dev: %{sec['creator_pct']}, holder: {sec['holders']}, "
                   f"riskler: {', '.join(sec['danger']) or 'yok'}")
