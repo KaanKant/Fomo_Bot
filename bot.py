@@ -772,12 +772,13 @@ def report_due(cfg, state):
 
 
 # ------------------------------------------------------------------ erken giriş
-def gecko_pools(chain, path):
+def gecko_pools(chain, path, page=None):
     """GeckoTerminal havuz kayıtlarını ayrıntılı metriklerle döndürür."""
     network = GECKO_NETWORKS.get(chain)
     if not network:
         return []
     data = get_json(f"{GECKO}/networks/{network}/{path}",
+                    params={"page": page} if page else None,
                     headers={"Accept": "application/json;version=20230302"})
     out = []
     for p in (data or {}).get("data") or []:
@@ -865,7 +866,10 @@ def early_filter(p, e):
         return "likidite düşük"
     if p["mc"] and p["liq"] / p["mc"] < e["liq_to_mc_min"]:
         return "likidite/MC düşük"
-    if p["vol1"] < e["vol_h1_min"]:
+    # Hacim eşiği yaşa göre ölçeklenir: 5 dakikalık coinden 1 saatlik hacim beklenemez
+    gerekli_hacim = max(e.get("vol_young_min", 5000),
+                        e["vol_h1_min"] * min(1.0, p["age_min"] / 60))
+    if p["vol1"] < gerekli_hacim:
         return "hacim düşük"
     if p["buyers15"] < e["buyers15_min"]:
         return "alıcı sayısı az"
@@ -911,8 +915,11 @@ def run_early(cfg, state, dry_run=False):
 
     pools, reasons = [], {}
     for chain in e.get("chains", ["solana"]):
-        for path in ("new_pools", "trending_pools"):
-            pools += gecko_pools(chain, path)
+        # new_pools'un tek sayfası Solana'da sadece son 1-2 dakikayı kapsıyor;
+        # 5-60 dakikalık aralığı görebilmek için birkaç sayfa geriye gidiyoruz.
+        for page in range(1, int(e.get("new_pool_pages", 8)) + 1):
+            pools += gecko_pools(chain, "new_pools", page)
+        pools += gecko_pools(chain, "trending_pools")
     uniq = {}
     for p in pools:
         key = f"{p['chain']}:{p['addr']}"
