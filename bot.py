@@ -228,7 +228,10 @@ def fetch_pairs(chain, addresses):
 
 def market_metrics(p, now_ms):
     txh1 = (p.get("txns") or {}).get("h1") or {}
+    txh6 = (p.get("txns") or {}).get("h6") or {}
     buys, sells = int(fnum(txh1.get("buys"))), int(fnum(txh1.get("sells")))
+    vol1 = fnum((p.get("volume") or {}).get("h1"))
+    vol24 = fnum((p.get("volume") or {}).get("h24"))
     mc = fnum(p.get("marketCap")) or fnum(p.get("fdv"))
     liq = fnum((p.get("liquidity") or {}).get("usd"))
     created = fnum(p.get("pairCreatedAt"))
@@ -239,11 +242,18 @@ def market_metrics(p, now_ms):
         "mc": mc,
         "liq": liq,
         "liq_ratio": liq / mc if mc else 0.0,
-        "vol24": fnum((p.get("volume") or {}).get("h24")),
+        "vol24": vol24,
         "chg24": fnum((p.get("priceChange") or {}).get("h24")),
         "chg1": fnum((p.get("priceChange") or {}).get("h1")),
         "buys1": buys,
         "sells1": sells,
+        "buys6": int(fnum(txh6.get("buys"))),
+        "sells6": int(fnum(txh6.get("sells"))),
+        "vol1": vol1,
+        "vol6": fnum((p.get("volume") or {}).get("h6")),
+        "chg6": fnum((p.get("priceChange") or {}).get("h6")),
+        # son 1 saatlik hacim, 24 saatlik ortalamanın kaç katı (ilgi hızlanıyor mu)
+        "momentum": (vol1 * 24 / vol24) if vol24 else 0.0,
         "age_h": (now_ms - created) / 3.6e6 if created else None,
         "dex_url": p.get("url", ""),
     }
@@ -267,6 +277,11 @@ def market_filter(m, cfg):
         return "işlem sayısı düşük"
     if m["buys1"] < cfg["h1_buy_sell_ratio_min"] * max(m["sells1"], 1):
         return "satış baskısı"
+    if m["buys6"] + m["sells6"] > 0 and \
+            m["buys6"] < cfg.get("h6_buy_sell_ratio_min", 0.9) * max(m["sells6"], 1):
+        return "6 saatlik satış baskısı"
+    if m["chg1"] > cfg.get("max_h1_change", 60):
+        return "son 1 saatte dikey yükseliş (zirve riski)"
     return None
 
 
@@ -280,10 +295,31 @@ def security_solana(mint, cfg):
     danger = [r.get("name", "?") for r in risks if str(r.get("level", "")).lower() == "danger"]
     warn = [r.get("name", "?") for r in risks if str(r.get("level", "")).lower() == "warn"]
     holders = rep.get("totalHolders")
+
+    # Likidite havuzu hesapları top10 holder hesabına girmemeli
+    pool_accounts, lp_locked = set(), None
+    for mk in rep.get("markets") or []:
+        for key in ("liquidityA", "liquidityB", "pubkey"):
+            if mk.get(key):
+                pool_accounts.add(str(mk[key]))
+        lp = mk.get("lp") or {}
+        pct = lp.get("lpLockedPct")
+        if isinstance(pct, (int, float)):
+            lp_locked = max(lp_locked or 0.0, float(pct))
+        for key in ("lpMint", "lpCurrentSupply"):
+            if isinstance(lp.get(key), str):
+                pool_accounts.add(lp[key])
+
+    top = [h for h in (rep.get("topHolders") or [])
+           if str(h.get("address")) not in pool_accounts and str(h.get("owner")) not in pool_accounts]
+    top10 = sum(fnum(h.get("pct")) for h in top[:10]) if top else None
+
     res = {
         "ok": True, "reason": None,
         "holders": int(holders) if isinstance(holders, (int, float)) else None,
-        "top10": None,
+        "top10": top10,
+        "lp_locked": lp_locked,
+        "creator_pct": None,
         "summary": f"RugCheck skor {rep.get('score_normalised', rep.get('score', '?'))}",
         "flags": danger + warn,
     }
@@ -296,6 +332,10 @@ def security_solana(mint, cfg):
     elif cfg.get("rugcheck_block_danger", True) and danger:
         res.update(ok=False, reason="RugCheck danger: " + ", ".join(danger[:3]))
     return res
+
+
+BURN_ADDRESSES = {"0x000000000000000000000000000000000000dead",
+                  "0x0000000000000000000000000000000000000000"}
 
 
 def security_evm(chain, addr, cfg):
@@ -313,6 +353,17 @@ def security_evm(chain, addr, cfg):
     wallets = [h for h in holders
                if str(h.get("is_contract")) != "1" and str(h.get("is_locked")) != "1"]
     top10 = sum(fnum(h.get("percent")) for h in wallets[:10]) * 100
+
+    # LP'nin ne kadarı kilitli ya da yakılmış
+    lp_locked = None
+    lp_holders = info.get("lp_holders") or []
+    if lp_holders:
+        lp_locked = sum(fnum(h.get("percent")) for h in lp_holders
+                        if str(h.get("is_locked")) == "1"
+                        or str(h.get("address", "")).lower() in BURN_ADDRESSES
+                        or "burn" in str(h.get("tag", "")).lower()) * 100
+
+    creator_pct = fnum(info.get("creator_percent")) * 100 if info.get("creator_percent") else None
     buy_tax = fnum(info.get("buy_tax")) * 100
     sell_tax = fnum(info.get("sell_tax")) * 100
     flags = []
@@ -324,6 +375,8 @@ def security_evm(chain, addr, cfg):
         "ok": True, "reason": None,
         "holders": int(fnum(info.get("holder_count"))) or None,
         "top10": top10 if holders else None,
+        "lp_locked": lp_locked,
+        "creator_pct": creator_pct,
         "summary": f"GoPlus vergi %{buy_tax:.0f}/%{sell_tax:.0f}",
         "flags": flags,
     }
@@ -341,15 +394,125 @@ def security_filter(chain, addr, cfg):
     if sec is None:
         if cfg.get("require_security_check", True):
             return None, "güvenlik verisi alınamadı"
-        return {"ok": True, "holders": None, "top10": None, "summary": "güvenlik verisi yok",
-                "flags": []}, None
+        return {"ok": True, "holders": None, "top10": None, "lp_locked": None,
+                "creator_pct": None, "summary": "güvenlik verisi yok", "flags": []}, None
     if not sec["ok"]:
         return sec, sec["reason"]
     if sec["holders"] is not None and sec["holders"] < cfg["holders_min"]:
         return sec, "holder sayısı düşük"
     if sec["top10"] is not None and sec["top10"] > cfg["top10_max_pct"]:
         return sec, f"top10 yüksek (%{sec['top10']:.0f})"
+    lp_min = cfg.get("lp_locked_min_pct")
+    if lp_min and sec.get("lp_locked") is not None and sec["lp_locked"] < lp_min:
+        return sec, f"LP kilitli değil (%{sec['lp_locked']:.0f})"
+    cre_max = cfg.get("creator_max_pct")
+    if cre_max and sec.get("creator_pct") is not None and sec["creator_pct"] > cre_max:
+        return sec, f"dev cüzdanı büyük (%{sec['creator_pct']:.0f})"
     return sec, None
+
+
+# ------------------------------------------------------------------ puanlama
+def score_signal(m, sec, holder_growth=None):
+    """0-100 arası kaba bir kalite puanı ve puanı oluşturan gerekçeler."""
+    pts, why = 0, []
+    mom = m.get("momentum", 0)
+    if mom >= 2:
+        pts += 20; why.append("hacim hızlanıyor")
+    elif mom >= 1:
+        pts += 12
+    else:
+        pts += 4
+    ratio = m["buys1"] / max(m["sells1"], 1)
+    if ratio >= 2:
+        pts += 20; why.append("güçlü alış baskısı")
+    elif ratio >= 1.5:
+        pts += 14
+    else:
+        pts += 8
+    lr = m["liq_ratio"]
+    pts += 15 if lr >= 0.10 else 10 if lr >= 0.06 else 5
+    h = sec.get("holders")
+    if h is None:
+        pts += 5
+    elif h >= 2000:
+        pts += 15; why.append("geniş holder tabanı")
+    else:
+        pts += 10 if h >= 1000 else 5
+    t = sec.get("top10")
+    if t is None:
+        pts += 5
+    elif t <= 15:
+        pts += 15; why.append("dağınık holder yapısı")
+    else:
+        pts += 10 if t <= 25 else 5
+    lp = sec.get("lp_locked")
+    if lp is None:
+        pts += 3
+    elif lp >= 90:
+        pts += 10; why.append("LP kilitli/yakılmış")
+    else:
+        pts += 6 if lp >= 50 else 0
+    if m["age_h"] and 6 <= m["age_h"] <= 72:
+        pts += 5
+    if holder_growth and holder_growth > 0:
+        pts += 5; why.append(f"holder +{holder_growth}")
+    return min(pts, 100), why
+
+
+# ------------------------------------------------------------------ izleme (iki aşamalı onay)
+def confirm_stage(cfg, state, key, m, sec, now):
+    """İlk geçişte izlemeye alır, ikinci geçişte onaylar.
+
+    Dönüş: (onaylandı_mı, holder_artışı)
+    """
+    watch = state.setdefault("watch", {})
+    prev = watch.get(key)
+    growth = None
+    if prev and sec.get("holders") and prev.get("holders"):
+        growth = sec["holders"] - prev["holders"]
+    entry = {"first_ts": (prev or {}).get("first_ts", now), "last_ts": now,
+             "holders": sec.get("holders"), "price": m["price"]}
+    watch[key] = entry
+    if not cfg.get("confirm_signals", True):
+        return True, growth
+    waited = (now - entry["first_ts"]) / 60
+    if waited < cfg.get("confirm_min_minutes", 15):
+        return False, growth
+    if waited > cfg.get("confirm_max_hours", 12) * 60:
+        entry["first_ts"] = now  # çok eskidi, sayacı sıfırla
+        return False, growth
+    return True, growth
+
+
+def prune_watch(state, now, hours=48):
+    state["watch"] = {k: v for k, v in (state.get("watch") or {}).items()
+                      if now - v.get("last_ts", 0) < hours * 3600}
+
+
+# ------------------------------------------------------------------ sinyal takibi
+def track_signals(cfg, state):
+    """Açık sinyallerin güncel ve zirve fiyatını günceller."""
+    now = time.time()
+    keep = now - cfg.get("track_days", 14) * 86400
+    sigs = [x for x in state.get("signals", []) if x["ts"] >= keep]
+    if not sigs:
+        return
+    by_chain = {}
+    for x in sigs:
+        by_chain.setdefault(x["chain"], []).append(x["addr"])
+    for chain, addrs in by_chain.items():
+        pairs = fetch_pairs(chain, list(dict.fromkeys(addrs)))
+        for x in sigs:
+            if x["chain"] != chain:
+                continue
+            p = pairs.get(x["addr"])
+            price = fnum(p.get("priceUsd")) if p else 0.0
+            x["last_price"] = price
+            x["last_ts"] = now
+            if price > fnum(x.get("peak_price")):
+                x["peak_price"] = price
+                x["peak_ts"] = now
+    log(f"{len(sigs)} sinyalin fiyatı güncellendi")
 
 
 # ------------------------------------------------------------------ mesajlar
@@ -364,18 +527,24 @@ def links(chain, addr, dex_url):
     return " | ".join(parts)
 
 
-def format_signal(chain, addr, m, sec):
+def format_signal(chain, addr, m, sec, score=None, why=None):
     holders = f"{sec['holders']:,}".replace(",", ".") if sec.get("holders") else "?"
     top10 = f"%{sec['top10']:.0f}" if sec.get("top10") is not None else "?"
+    lp = f"%{sec['lp_locked']:.0f}" if sec.get("lp_locked") is not None else "?"
     flags = f"\nUyarılar: {html.escape(', '.join(sec['flags'][:4]))}" if sec.get("flags") else ""
+    grade = ""
+    if score is not None:
+        grade = f" - {'A' if score >= 70 else 'B'} sinyali ({score}/100)"
     return (
-        f"<b>Yeni sinyal: {html.escape(m['symbol'])}</b> ({CHAIN_LABELS.get(chain, chain)})\n"
+        f"<b>Yeni sinyal: {html.escape(m['symbol'])}</b>{grade} ({CHAIN_LABELS.get(chain, chain)})\n"
         f"{html.escape(m['name'])}\n\n"
         f"MC: {money(m['mc'])} | Likidite: {money(m['liq'])} (%{m['liq_ratio']*100:.1f})\n"
         f"Yaş: {age_text(m['age_h'])} | 24s hacim: {money(m['vol24'])}\n"
         f"Son 1s: {m['buys1']} alış / {m['sells1']} satış | 1s: {m['chg1']:+.0f}% | 24s: {m['chg24']:+.0f}%\n"
-        f"Holder: {holders} | Top10: {top10}\n"
+        f"Hacim ivmesi: {m.get('momentum', 0):.1f}x | 6s: {m['buys6']} alış / {m['sells6']} satış\n"
+        f"Holder: {holders} | Top10: {top10} | LP kilitli: {lp}\n"
         f"Güvenlik: {html.escape(sec.get('summary', '?'))}{flags}\n"
+        f"Artılar: {html.escape(', '.join(why) if why else '-')}\n"
         f"Kaynak: {html.escape(', '.join(m.get('sources') or ['?']))}\n\n"
         f"<code>{addr}</code>\n"
         f"{links(chain, addr, m['dex_url'])}\n\n"
@@ -389,6 +558,7 @@ def run_scan(cfg, state, dry_run=False):
     now_ms = now * 1000
     cooldown = cfg["cooldown_hours"] * 3600
     state["seen"] = {k: t for k, t in state["seen"].items() if now - t < max(cooldown, 3 * 86400)}
+    prune_watch(state, now)
 
     candidates = discover_candidates(cfg)
     log(f"{len(candidates)} aday bulundu")
@@ -417,73 +587,137 @@ def run_scan(cfg, state, dry_run=False):
 
     # En güçlü alış baskısı olanlar önce
     passed.sort(key=lambda x: x[2]["buys1"] / max(x[2]["sells1"], 1), reverse=True)
-    sent = 0
+    sent, watched = 0, 0
     for chain, addr, m in passed:
         if sent >= cfg["max_alerts_per_run"]:
             break
+        key = f"{chain}:{addr}"
         sec, why = security_filter(chain, addr, cfg)
         if why:
             reasons[why] = reasons.get(why, 0) + 1
-            state["seen"][f"{chain}:{addr}"] = now  # güvenlik reddi: cooldown boyunca tekrar bakma
+            state["seen"][key] = now  # güvenlik reddi: cooldown boyunca tekrar bakma
             continue
-        if send_telegram(format_signal(chain, addr, m, sec), dry_run):
+        ok, growth = confirm_stage(cfg, state, key, m, sec, now)
+        score, pros = score_signal(m, sec, growth)
+        if score < cfg.get("score_min", 50):
+            reasons[f"puan düşük (<{cfg.get('score_min', 50)})"] = \
+                reasons.get(f"puan düşük (<{cfg.get('score_min', 50)})", 0) + 1
+            continue
+        if not ok:
+            watched += 1
+            continue
+        if send_telegram(format_signal(chain, addr, m, sec, score, pros), dry_run):
             sent += 1
-            state["seen"][f"{chain}:{addr}"] = now
+            state["seen"][key] = now
             state["signals"].append({
-                "key": f"{chain}:{addr}", "chain": chain, "addr": addr, "symbol": m["symbol"],
-                "price": m["price"], "mc": m["mc"], "ts": now,
+                "key": key, "chain": chain, "addr": addr, "symbol": m["symbol"],
+                "price": m["price"], "peak_price": m["price"], "mc": m["mc"], "ts": now,
+                "score": score, "sources": m.get("sources") or [],
             })
         time.sleep(0.5)
 
-    keep = now - 30 * 86400
-    state["signals"] = [s for s in state["signals"] if s["ts"] >= keep]
-    log(f"{len(passed)} coin piyasa filtresini geçti, {sent} bildirim gönderildi")
+    keep = now - cfg.get("track_days", 14) * 86400
+    state["signals"] = [x for x in state["signals"] if x["ts"] >= keep]
+    track_signals(cfg, state)
+    log(f"{len(passed)} coin piyasa filtresini geçti, {sent} bildirim, {watched} izlemede")
     if reasons:
         log("Elenme sebepleri:", json.dumps(reasons, ensure_ascii=False))
     return sent
 
 
+def _pct(now_price, entry):
+    return (now_price / entry - 1) * 100 if entry and now_price else -100.0
+
+
+def _bucket(mc):
+    return "<500K" if mc < 5e5 else "500K-2M" if mc < 2e6 else "2M+"
+
+
+def _summary(rows, label):
+    """rows: [(sinyal, şimdiki %, zirve %)] -> tek satır özet"""
+    if not rows:
+        return None
+    nowp = [r[1] for r in rows]
+    peak = [r[2] for r in rows]
+    hit = sum(1 for p in peak if p >= 50)
+    return (f"{label}: {len(rows)} sinyal | medyan zirve {statistics.median(peak):+.0f}% | "
+            f"medyan şimdi {statistics.median(nowp):+.0f}% | %50+ yapan: {hit}")
+
+
 def run_report(cfg, state, dry_run=False):
     now = time.time()
     since = now - cfg["report_lookback_days"] * 86400
-    sigs = [s for s in state["signals"] if s["ts"] >= since and s.get("price")]
+    sigs = [x for x in state.get("signals", []) if x["ts"] >= since and x.get("price")]
     if not sigs:
         ok = send_telegram(f"<b>Günlük rapor</b>\nSon {cfg['report_lookback_days']} günde sinyal yok.", dry_run)
         log(f"Rapor {'gönderildi' if ok else 'GÖNDERİLEMEDİ'} (kayıtlı sinyal yok)")
         return ok
 
+    track_signals(cfg, state)  # rakamlar güncel olsun
+    rows = [(x, _pct(fnum(x.get("last_price")), x["price"]),
+             _pct(max(fnum(x.get("peak_price")), fnum(x.get("last_price"))), x["price"]))
+            for x in sigs]
+    rows.sort(key=lambda r: r[2], reverse=True)
+
+    lines = [f"<b>Günlük rapor - son {cfg['report_lookback_days']} gün</b>",
+             _summary(rows, "Genel")]
+
+    # Kaynak kırılımı
+    by_src = {}
+    for r in rows:
+        for src in (r[0].get("sources") or ["?"]):
+            by_src.setdefault(src, []).append(r)
+    if len(by_src) > 1:
+        lines.append("\n<b>Kaynağa göre</b>")
+        for src, rr in sorted(by_src.items(), key=lambda kv: -len(kv[1])):
+            lines.append(_summary(rr, html.escape(src)))
+
+    # Market cap kırılımı
+    by_mc = {}
+    for r in rows:
+        by_mc.setdefault(_bucket(fnum(r[0].get("mc"))), []).append(r)
+    if len(by_mc) > 1:
+        lines.append("\n<b>Market cap'e göre</b>")
+        for b in ("<500K", "500K-2M", "2M+"):
+            if by_mc.get(b):
+                lines.append(_summary(by_mc[b], b))
+
+    # Ağ ve puan kırılımı
     by_chain = {}
-    for s in sigs:
-        by_chain.setdefault(s["chain"], []).append(s["addr"])
-    prices = {}
-    for chain, addrs in by_chain.items():
-        for addr, p in fetch_pairs(chain, list(dict.fromkeys(addrs))).items():
-            prices[f"{chain}:{addr}"] = fnum(p.get("priceUsd"))
+    for r in rows:
+        by_chain.setdefault(CHAIN_LABELS.get(r[0]["chain"], r[0]["chain"]), []).append(r)
+    if len(by_chain) > 1:
+        lines.append("\n<b>Ağa göre</b>")
+        for c, rr in sorted(by_chain.items(), key=lambda kv: -len(kv[1])):
+            lines.append(_summary(rr, c))
+    graded = [r for r in rows if r[0].get("score")]
+    if graded:
+        a = [r for r in graded if r[0]["score"] >= 70]
+        b = [r for r in graded if r[0]["score"] < 70]
+        lines.append("\n<b>Puana göre</b>")
+        for lbl, rr in (("A sinyalleri", a), ("B sinyalleri", b)):
+            if rr:
+                lines.append(_summary(rr, lbl))
 
-    rows = []
-    for s in sigs:
-        cur = prices.get(s["key"])
-        chg = (cur / s["price"] - 1) * 100 if cur else -100.0  # veri yoksa (çift silinmiş) -100 say
-        rows.append((s, chg))
-    changes = [c for _, c in rows]
-    up = sum(1 for c in changes if c > 0)
-    rows.sort(key=lambda x: x[1], reverse=True)
+    def line(r):
+        x, nowp, peakp = r
+        return (f"{html.escape(x['symbol'])} ({CHAIN_LABELS.get(x['chain'], x['chain'])}): "
+                f"zirve {peakp:+.0f}%, şimdi {nowp:+.0f}%")
 
-    def line(s, c):
-        return f"{html.escape(s['symbol'])} ({CHAIN_LABELS.get(s['chain'], s['chain'])}): {c:+.0f}%"
-
-    text = (
-        f"<b>Günlük rapor - son {cfg['report_lookback_days']} gün</b>\n"
-        f"Sinyal: {len(rows)} | Yükselen: {up} | Düşen: {sum(1 for c in changes if c < 0)}\n"
-        f"Medyan değişim: {statistics.median(changes):+.0f}%\n"
-        f"Her sinyale eşit $20 koyulsaydı: {sum(20 * (1 + c / 100) for c in changes):.0f}$ "
-        f"(yatırılan {20 * len(rows)}$, ücretler hariç)\n\n"
-        f"<b>En iyi</b>\n" + "\n".join(line(s, c) for s, c in rows[:5])
-    )
+    lines.append("\n<b>En iyi</b>")
+    lines += [line(r) for r in rows[:5]]
     if len(rows) > 5:
-        text += "\n\n<b>En kötü</b>\n" + "\n".join(line(s, c) for s, c in rows[max(5, len(rows) - 5):][::-1])
-    text += "\n\n<i>Fiyatı artık bulunamayan coinler -%100 sayılır.</i>"
-    ok = send_telegram(text, dry_run)
+        lines.append("\n<b>En kötü</b>")
+        lines += [line(r) for r in rows[max(5, len(rows) - 5):][::-1]]
+
+    invested = 20 * len(rows)
+    lines.append(f"\nHer sinyale $20: şimdi {sum(20 * (1 + r[1] / 100) for r in rows):.0f}$, "
+                 f"zirvede satsaydın {sum(20 * (1 + r[2] / 100) for r in rows):.0f}$ "
+                 f"(yatırılan {invested}$, ücretler hariç)")
+    lines.append("\n<i>Zirve = sinyalden sonra görülen en yüksek fiyat (taramalar arasında "
+                 "ölçüldüğü için yaklaşıktır). Fiyatı bulunamayan coinler -%100 sayılır.</i>")
+
+    ok = send_telegram("\n".join(x for x in lines if x), dry_run)
     log(f"Rapor {'gönderildi' if ok else 'GÖNDERİLEMEDİ'} ({len(rows)} sinyal)")
     return ok
 
