@@ -1,12 +1,6 @@
 {
- "tarih": "2026-09-23T18:42:18.294094+00:00",
+ "tarih": "2026-09-23T18:54:33.349162+00:00",
  "kazananlar": [
-  {
-   "mint": "8HbGFeuB4tcdWp2KwjvTW6nSoyoEa1VUoBsaZjzKPYdd",
-   "name": "MuseAI / SOL",
-   "gain": 1435.806,
-   "mc": 11892157.5958672
-  },
   {
    "mint": "C3QYkeYv8Q9zgrxKxyn2DkXZgNCn66998MhVh9rxMaLG",
    "name": "JEANPHIL / SOL",
@@ -14,10 +8,16 @@
    "mc": 1707033.75511337
   },
   {
+   "mint": "8HbGFeuB4tcdWp2KwjvTW6nSoyoEa1VUoBsaZjzKPYdd",
+   "name": "MuseAI / SOL",
+   "gain": 1133.995,
+   "mc": 11892157.5958672
+  },
+  {
    "mint": "HaYRgD7rjwj1AwoWjafokj4196sufYm4vKFamLZVpump",
    "name": "ARCHIBROWN / SOL",
-   "gain": 714.384,
-   "mc": 396225.4152
+   "gain": 622.869,
+   "mc": 351700.3614
   },
   {
    "mint": "GxWNbw3JFZVUnFSvUw11FTajEzG6yzSSrJq5nQiMrYnf",
@@ -28,27 +28,896 @@
   {
    "mint": "MboMMGXjGDi45hfjCVzYru32kEM5nw7VzCqCofZpump",
    "name": "KCAT / SOL",
-   "gain": 173.353,
-   "mc": 361431.076187198
+   "gain": 185.544,
+   "mc": 356620.78474041
   },
   {
    "mint": "HTmQz7My6MehV7bjhJ6jde8nDND1yvsz68d24LP7YgUQ",
    "name": "GP / SOL",
-   "gain": 105.526,
-   "mc": 24585126.8
-  },
-  {
-   "mint": "GTBxUiw6wJdmmkCGZgRHLyYxqu1vG4KtRpeox6yDpump",
-   "name": "JEANPHIL / SOL",
-   "gain": 87.536,
-   "mc": 5943472.323
-  },
-  {
-   "mint": "AMqCCrGTsmdK6a8r9BGDcnoxHFr5kVe5JfM7JYrfjFz7",
-   "name": "Apple / SOL",
-   "gain": 82.463,
-   "mc": 1759202.05699869
+   "gain": 128.664,
+   "mc": 25784614.66
   }
  ],
- "cuzdanlar": []
+ "cuzdanlar": [
+  {
+   "wallet": "GJzqoNKtei612b9Fcri2jn4KosNPX1aWE8MGjB9PuXQw",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 14.11,
+     "dk": 1.5,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 14.17,
+     "dk": 1.6,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 28.28,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "2w598dJQcxykkL15aTwK4K3rt8eEJaUZw7bxMXyTzwEa",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 14.01,
+     "dk": 1.5,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 26.79,
+     "dk": 1.7,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 40.8,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "3PYrtHcwMCsTBqREh59qyL6FdSswHo9KCmqnDE78wdc9",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 26.42,
+     "dk": 1.5,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 13.43,
+     "dk": 1.1,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 39.85,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "CrGgv9Ks6jyy4PoGkJfQx3FTRniJiQuNFWJhFZBA9dW2",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 27.63,
+     "dk": 1.4,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 25.67,
+     "dk": 1.8,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 53.3,
+   "swaps": 96,
+   "span_h": 0.4,
+   "bot": false
+  },
+  {
+   "wallet": "Bwz6z5osjGAGBr8EBmajnDx1BUAauX2VKV2FBgAJf8Mb",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 13.81,
+     "dk": 1.4,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 12.36,
+     "dk": 1.5,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 26.17,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "58nKzCetyCKKbafpjhbJFm3KKQYoPZjtYXNMBcMMVLRW",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 26.62,
+     "dk": 1.4,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 12.28,
+     "dk": 2.0,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 38.9,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "FTT2wdBJCfApgshrjLAkPrBQaxv6KFDPy7yBePdmzA4k",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 25.03,
+     "dk": 1.3,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 12.46,
+     "dk": 0.8,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 37.49,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "B5b7Eok71Tf1bcxB5tp612SNyQ8QK6hMDHTNmaXKr8bM",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 37.38,
+     "dk": 1.3,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 24.94,
+     "dk": 2.2,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 62.32,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "4cSZkCDYQkEj4o3T1vpVoLDdXFBsfNuJzUbMqZmGLqfh",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 39.99,
+     "dk": 2.4,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 12.64,
+     "dk": 1.5,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 52.63,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "C9bCLRPbu8URHwGJ39VDgnSy7pRs6rvYsLUXaaKrPWj6",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 39.02,
+     "dk": 2.0,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 13.14,
+     "dk": 0.8,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 52.16,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "9BiMMLWJPvzkEAtmrL8vHmAFbTKAC1j6DbvEFGMSF5PY",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 25.45,
+     "dk": 1.9,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 26.72,
+     "dk": 0.8,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 52.17,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "D9hkFNuvtwuMh63cGoLKHcRbu1Sbxk1rEz3S7iAbZDVx",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 25.27,
+     "dk": 3.1,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 12.45,
+     "dk": 1.2,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 37.72,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "FTSop7cHzwYrHZp98eLVkeZ8Vs9sRRNpc9UWXDR6rj9H",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 25.64,
+     "dk": 3.1,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 12.6,
+     "dk": 1.0,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 38.24,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "7mjR4ddQ2dBsqKCz7prppD6kk2X6yp3aZ9A8EJ7KCGvs",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 12.75,
+     "dk": 3.1,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 12.49,
+     "dk": 2.0,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 25.24,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "Hyv3pALt9yHFgaZyPF6kyvuaR25sxKJiD18yHFB2igZ4",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 26.41,
+     "dk": 1.7,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 13.03,
+     "dk": 2.0,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 39.44,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "t5WQtpo2QWSdWJkqJpke9S45Pfhyxc1KeWcQBvGY4R6",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 13.43,
+     "dk": 3.0,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 25.88,
+     "dk": 2.1,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 39.31,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "9nZeMKVPKVM25aon49vfAok4Yq3gp5fcyLmipJNgHW9e",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 38.51,
+     "dk": 2.6,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 12.93,
+     "dk": 1.4,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 51.44,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "FWgFCoUvmgZnzTiA4nW2bkjYiWHKDcBqpCkML7BEwbYT",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 41.67,
+     "dk": 2.6,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 12.48,
+     "dk": 0.8,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 54.15,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "4wpkGDUKZB3HntpG8UjnTNyYSNRuswJEw2u5evGpHUoF",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 38.71,
+     "dk": 2.0,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 13.14,
+     "dk": 1.2,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 51.85,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "3TSyFCmH1vas3oaHCmYUGWaw61UypQHLmrhaSRSYK96t",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 27.64,
+     "dk": 2.9,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 27.37,
+     "dk": 1.4,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 55.01,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "9kcPxQuvXmB8ohuxyGYNDuBfQMBEzzHgLEqdwMMG295A",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 26.9,
+     "dk": 2.6,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 24.55,
+     "dk": 0.7,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 51.45,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "9idkZoLsHaW8b2uBs3zHEuKhpewoHsNSzfNUsxdFCt3w",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 24.66,
+     "dk": 2.3,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 13.81,
+     "dk": 1.0,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 38.47,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "Hd68EWbvYVk4brYL7Nd3y6Av1fxPaRMKnow7D772aiu4",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 27.93,
+     "dk": 2.6,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 12.73,
+     "dk": 0.8,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 40.66,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "9SnyNSVC2xuSPStKF9vSjpCDkxsQsgBrMsPVHfwkq9VP",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 27.29,
+     "dk": 2.4,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 12.42,
+     "dk": 1.4,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 39.71,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "7KZqvQwjrUdgYoBCHK3PqETQia6ACAteWMGbFBU2t5SR",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 38.21,
+     "dk": 2.8,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 12.34,
+     "dk": 1.3,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 50.55,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "J78gVXSNBNVdLbuUHUbj5WaXDL4JDTncputFY6RN97m9",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 13.04,
+     "dk": 2.8,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 26.09,
+     "dk": 0.9,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 39.13,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "3HUoSUMV6Y2MUmFoB7eZPed3Ttm9ACP4AUi8Df8xy3qk",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 39.82,
+     "dk": 1.9,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 12.55,
+     "dk": 0.8,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 52.37,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "3H1r2ZNmmzYQfDCzZTT2XG7DHBvbEnJKC2c9DpUCuDsF",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 13.48,
+     "dk": 2.8,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 14.05,
+     "dk": 1.2,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 27.53,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "9B8k1CvRiEfVtEYhtiVhfczUmKJhs1oJmzgcHbxJbKa9",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 40.08,
+     "dk": 1.6,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 12.28,
+     "dk": 1.7,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 52.36,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "Cndik31Zt9kTeCBPdoS5YzC532qnFi5tBXKYEkZVAbTh",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 27.38,
+     "dk": 2.8,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 13.87,
+     "dk": 1.9,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 41.25,
+   "swaps": 88,
+   "span_h": 4.6,
+   "bot": false
+  },
+  {
+   "wallet": "GjBnF6YKJfJbwnTAE1mygP6VaooGq4fmfEAbq4zEXHXY",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 13.49,
+     "dk": 2.8,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 13.45,
+     "dk": 1.9,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 26.94,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "AeYFBe88Q8R8oeDNgksddyBBxf2qMURPF3ti1cNMr4y8",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 27.64,
+     "dk": 2.8,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 25.66,
+     "dk": 1.7,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 53.3,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "aabwcxkSstmm1exyLFEC5ft5ffw1SmvX9Nfk2qWcELL",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 38.11,
+     "dk": 2.8,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 13.45,
+     "dk": 1.8,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 51.56,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "318scpfG2RWwRac8kXgVVQUfEjXBtU7E2W8rCidHtr2E",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 26.82,
+     "dk": 2.7,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 13.26,
+     "dk": 1.1,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 40.08,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "GVuRLVVeRTELiKV3y76iNcSk4xSHpuJJ7fbecm4u5XHU",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 13.0,
+     "dk": 2.6,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 23.88,
+     "dk": 0.6,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 36.88,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "6yyn1HsundtRLYxDobuJopuY5kejy5zCXMaU2fZ4dLaA",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 13.65,
+     "dk": 2.4,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 13.44,
+     "dk": 2.1,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 27.09,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "CScpVjF71Pd5uMhuuwcaw2nTb1W1z7g5pXxXzHXDniaL",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 27.32,
+     "dk": 2.4,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 13.27,
+     "dk": 1.8,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 40.59,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "9cgeL4y9ye3X5gywF2o2dQzGbq8XJBXtJQeAabz1R7Hg",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 37.85,
+     "dk": 2.3,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 26.79,
+     "dk": 0.7,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 64.64,
+   "swaps": 96,
+   "span_h": 0.4,
+   "bot": false
+  },
+  {
+   "wallet": "Fj265KNKZgPTQAoH8S6wF6aDXDtT894pRYm6pb4cNumA",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 26.37,
+     "dk": 2.3,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 14.11,
+     "dk": 1.2,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 40.48,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  },
+  {
+   "wallet": "BiYDUPZLgGHZr2TmCfnEJ6JkDHRJepUBS5KfL7YMDdwN",
+   "coins": [
+    {
+     "coin": "MuseAI / SOL",
+     "sol": 26.95,
+     "dk": 2.3,
+     "gain": 1134
+    },
+    {
+     "coin": "OpenAI / SOL",
+     "sol": 12.62,
+     "dk": 1.8,
+     "gain": 344
+    }
+   ],
+   "n": 2,
+   "toplam_sol": 39.57,
+   "swaps": 96,
+   "span_h": 0.5,
+   "bot": false
+  }
+ ]
 }
