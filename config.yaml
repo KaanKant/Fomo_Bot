@@ -21,7 +21,7 @@ market_cap_max: 10000000      # $10M
 liquidity_min: 25000          # en az $25K likidite
 liquidity_to_mc_min: 0.03     # likidite / MC en az %3
 volume_24h_min: 50000         # 24 saatlik hacim en az $50K
-age_hours_min: 1              # 1 saatten genç coinleri atla (en riskli dönem)
+age_hours_min: 12             # 12 saatten genç coinleri atla (pump.fun mezunlarının en kırılgan dönemi)
 age_hours_max: 336            # 14 günden yaşlıları atla
 price_change_24h_max: 300     # 24 saatte %300'den fazla uçmuşsa atla (zirve riski)
 price_change_24h_min: -50     # 24 saatte %50'den fazla düşmüşse atla
@@ -29,6 +29,9 @@ h1_buy_sell_ratio_min: 1.0    # son 1 saatte alış sayısı >= satış sayısı
 h1_txns_min: 30               # son 1 saatte en az 30 işlem (ölü coinleri ele)
 h6_buy_sell_ratio_min: 0.9    # son 6 saatte alış/satış dengesi bu oranın altına düşmesin
 max_h1_change: 60             # son 1 saatte %60'tan fazla uçmuşsa atla (tepeden giriş riski)
+# Aşırı ısınma: ikisi birden olursa coin elenir (parabolik zirve göstergesi)
+overheat_momentum: 8          # hacim ivmesi bu katın üzerindeyse
+overheat_chg24: 100           # ve 24 saatlik artış bu yüzdeyi geçtiyse
 
 # --- Güvenlik filtreleri -------------------------------------
 # Solana: RugCheck  |  BSC/Base: GoPlus
