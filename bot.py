@@ -619,10 +619,43 @@ def run_scan(cfg, state, dry_run=False):
     keep = now - cfg.get("track_days", 14) * 86400
     state["signals"] = [x for x in state["signals"] if x["ts"] >= keep]
     track_signals(cfg, state)
+    bump_stats(state, now, len(candidates), len(passed), watched, sent, reasons)
     log(f"{len(passed)} coin piyasa filtresini geçti, {sent} bildirim, {watched} izlemede")
     if reasons:
         log("Elenme sebepleri:", json.dumps(reasons, ensure_ascii=False))
     return sent
+
+
+def bump_stats(state, now, candidates, passed, watched, sent, reasons):
+    """Tarama istatistiklerini biriktirir; günlük raporda özetlenip sıfırlanır."""
+    st = state.setdefault("stats", {"since": now, "scans": 0, "candidates": 0,
+                                    "passed": 0, "watched": 0, "sent": 0, "reasons": {}})
+    st["scans"] += 1
+    st["candidates"] += candidates
+    st["passed"] += passed
+    st["watched"] += watched
+    st["sent"] += sent
+    for k, v in reasons.items():
+        st["reasons"][k] = st["reasons"].get(k, 0) + v
+
+
+def stats_summary(state, now):
+    """Telegram için tarama özeti satırları; biriken istatistikleri sıfırlar."""
+    st = state.get("stats")
+    if not st or not st.get("scans"):
+        return []
+    hours = max((now - st.get("since", now)) / 3600, 0.1)
+    top = sorted(st["reasons"].items(), key=lambda kv: -kv[1])[:5]
+    lines = [f"\n<b>Tarama özeti - son {hours:.0f} saat</b>",
+             f"{st['scans']} tarama | ortalama {st['candidates'] / st['scans']:.0f} aday",
+             f"Filtreyi geçen: {st['passed']} | İzlemeye alınan: {st['watched']} | "
+             f"Bildirilen: {st['sent']}"]
+    if top:
+        lines.append("En çok eleyen filtreler:")
+        lines += [f"  {html.escape(k)}: {v}" for k, v in top]
+    state["stats"] = {"since": now, "scans": 0, "candidates": 0, "passed": 0,
+                      "watched": 0, "sent": 0, "reasons": {}}
+    return lines
 
 
 def _pct(now_price, entry):
@@ -649,7 +682,10 @@ def run_report(cfg, state, dry_run=False):
     since = now - cfg["report_lookback_days"] * 86400
     sigs = [x for x in state.get("signals", []) if x["ts"] >= since and x.get("price")]
     if not sigs:
-        ok = send_telegram(f"<b>Günlük rapor</b>\nSon {cfg['report_lookback_days']} günde sinyal yok.", dry_run)
+        text = "\n".join([f"<b>Günlük rapor</b>",
+                          f"Son {cfg['report_lookback_days']} günde sinyal yok."]
+                         + stats_summary(state, now))
+        ok = send_telegram(text, dry_run)
         log(f"Rapor {'gönderildi' if ok else 'GÖNDERİLEMEDİ'} (kayıtlı sinyal yok)")
         return ok
 
@@ -714,6 +750,7 @@ def run_report(cfg, state, dry_run=False):
     lines.append(f"\nHer sinyale $20: şimdi {sum(20 * (1 + r[1] / 100) for r in rows):.0f}$, "
                  f"zirvede satsaydın {sum(20 * (1 + r[2] / 100) for r in rows):.0f}$ "
                  f"(yatırılan {invested}$, ücretler hariç)")
+    lines += stats_summary(state, now)
     lines.append("\n<i>Zirve = sinyalden sonra görülen en yüksek fiyat (taramalar arasında "
                  "ölçüldüğü için yaklaşıktır). Fiyatı bulunamayan coinler -%100 sayılır.</i>")
 
