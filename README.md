@@ -12,10 +12,12 @@ Her 10 dakikada bir DexScreener ve GeckoTerminal'daki yeni ve trend coinleri tar
    Her bildirimde coinin hangi kaynaktan geldiği yazar.
 2. **Piyasa filtresi:** MC, likidite, likidite/MC oranı, hacim, yaş, 24 saatlik değişim, son 1 saatteki alış/satış dengesi.
 3. **Güvenlik filtresi:**
-   - Solana için RugCheck: mint/freeze yetkisi, "danger" seviyeli riskler, holder sayısı.
-   - BSC ve Base için GoPlus: honeypot, vergi, kaynak kodu, top 10 holder oranı, holder sayısı.
-4. **Bildirim:** Geçenler Telegram'a gider. Aynı coin 24 saat boyunca tekrar bildirilmez.
-5. **Günlük rapor:** Son 7 günün sinyalleri bugün ne durumda? "Her sinyale $20 koysaydım ne olurdu?" sorusunu cevaplar.
+   - Solana için RugCheck: mint/freeze yetkisi, "danger" seviyeli riskler, holder sayısı, LP kilit oranı, havuz hesapları hariç top 10 holder oranı.
+   - BSC ve Base için GoPlus: honeypot, vergi, kaynak kodu, top 10 holder oranı, holder sayısı, LP kilit/yakım oranı, coini çıkaran cüzdanın payı.
+4. **Puanlama ve iki aşamalı onay:** Her coine 0-100 puan verilir (hacim ivmesi, alış/satış dengesi, likidite oranı, holder tabanı, top 10 dağılımı, LP kilidi). `score_min` altındakiler elenir, 70+ olanlar "A sinyali" diye işaretlenir. Bir coin ilk geçişte hemen bildirilmez, önce izlemeye alınır; bir sonraki taramada da kriterleri sağlıyorsa bildirilir. Tek seferlik sahte hacim patlamaları böylece elenir.
+5. **Bildirim:** Geçenler Telegram'a gider. Aynı coin 24 saat boyunca tekrar bildirilmez.
+6. **Takip:** Bildirilen her coinin fiyatı 14 gün boyunca her taramada güncellenir, gördüğü en yüksek fiyat (zirve) kaydedilir.
+7. **Günlük rapor:** Son 7 günün sinyalleri için zirve ve şimdiki durum; kaynağa, market cap aralığına, ağa ve puana göre kırılım; "her sinyale $20 koysaydım şimdi / zirvede ne olurdu" hesabı.
 
 Tüm eşikler `config.yaml` içinde, istediğin gibi değiştirebilirsin.
 
