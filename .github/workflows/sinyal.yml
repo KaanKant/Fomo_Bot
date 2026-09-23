@@ -9,7 +9,7 @@ on:
       mode:
         description: "Mod"
         type: choice
-        options: [scan, report, test]
+        options: [scan, report, test, erken]
         default: test
 
 concurrency:
