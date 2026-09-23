@@ -73,7 +73,10 @@ erken:
   vol_young_min: 5000         # çok genç coinler için en düşük hacim tabanı
   buyers15_min: 40            # son 15 dakikada en az 40 FARKLI alıcı
   buyers_sellers_min: 1.3     # alıcı sayısı satıcının en az 1.3 katı
-  lp_locked_min: 90           # LP en az %90 kilitli/yakılmış
+  lp_locked_min: 90           # LP en az %90 kilitli/yakılmış (launchpad havuzları hariç)
+  # Bonding curve launchpad'leri: likiditeyi program tutar, kurucu çekemez.
+  # Bu havuzlarda LP kilidi aranmaz; başka DEX'lerde kilit şartı devam eder.
+  launchpad_dexes: [pump, launchlab, moonshot, bonk, believe, heaven, bags, boop, virtuals]
   insider_max_pct: 15         # RugCheck insider/bundle ağı arzın en fazla %15'i
   creator_max_pct: 5          # coini çıkaran cüzdan en fazla %5
   max_alerts_per_run: 2       # taramada en fazla 2 erken giriş bildirimi
