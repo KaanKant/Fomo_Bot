@@ -812,6 +812,7 @@ def gecko_pools(chain, path, page=None):
             "buys15": int(fnum(m15.get("buys"))), "sells15": int(fnum(m15.get("sells"))),
             "buyers5": int(fnum(m5.get("buyers"))), "sellers5": int(fnum(m5.get("sellers"))),
             "age_min": age_min, "pool": a.get("address"),
+            "dex": (((rel.get("dex") or {}).get("data") or {}).get("id") or ""),
         })
     time.sleep(2.1)
     return out
@@ -891,7 +892,7 @@ def format_early(p, sec):
         f"Son 15 dk: <b>{p['buyers15']} farklı alıcı</b> / {p['sellers15']} satıcı "
         f"({p['buys15']} alış / {p['sells15']} satış)\n"
         f"Holder: {holders if holders else '?'} | "
-        f"LP kilitli: {('%%%.0f' % sec['lp_locked']) if sec.get('lp_locked') is not None else '?'}\n"
+        f"LP: {'launchpad bonding curve (kurucu çekemez)' if sec.get('launchpad') else ('kilitli %%%.0f' % sec['lp_locked']) if sec.get('lp_locked') is not None else '?'}\n"
         f"Insider/bundle payı: %{sec.get('insider_pct', 0):.1f} | "
         f"Dev cüzdanı: %{sec.get('creator_pct', 0):.1f}\n\n"
         f"<code>{p['addr']}</code>\n"
@@ -949,12 +950,23 @@ def run_early(cfg, state, dry_run=False):
         if not sec:
             reasons["güvenlik verisi yok"] = reasons.get("güvenlik verisi yok", 0) + 1
             continue
+        # Launchpad (bonding curve) havuzlarında likiditeyi program tutar; kurucu
+        # çekemediği için "LP kilitli değil" uyarısı burada gerçek bir risk değil.
+        dex = (p.get("dex") or "").lower()
+        launchpad = any(k in dex for k in e.get("launchpad_dexes", []))
+        danger = [d for d in sec["danger"]
+                  if not (launchpad and "lp unlocked" in d.lower())]
+
         bad = None
-        if sec["rugged"] or sec["danger"]:
-            bad = "RugCheck riskli"
+        if sec["rugged"] or danger:
+            bad = f"RugCheck riskli ({danger[0] if danger else 'rugged'})"
         elif not sec["mint_ok"]:
             bad = "mint/freeze yetkisi açık"
-        elif sec["lp_locked"] is not None and sec["lp_locked"] < e.get("lp_locked_min", 90):
+        elif launchpad:
+            pass                            # LP şartı aranmaz, likidite programda
+        elif sec["lp_locked"] is None:
+            bad = "LP kilit verisi yok"      # erken kategoride şüpheden yararlandırma yok
+        elif sec["lp_locked"] < e.get("lp_locked_min", 90):
             bad = "LP kilitli değil"
         elif sec["insider_pct"] > e.get("insider_max_pct", 15):
             bad = f"insider/bundle payı yüksek (%{sec['insider_pct']:.0f})"
@@ -964,6 +976,7 @@ def run_early(cfg, state, dry_run=False):
             reasons[bad] = reasons.get(bad, 0) + 1
             seen[key] = now
             continue
+        sec["launchpad"] = launchpad
         if send_telegram(format_early(p, sec), dry_run):
             sent += 1
             seen[key] = now
