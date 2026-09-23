@@ -62,8 +62,8 @@ track_days: 14                # sinyaller bu kadar gün fiyat takibinde kalır (
 erken:
   aktif: true
   chains: [solana]            # güvenlik kontrolü şimdilik sadece Solana
-  new_pool_pages: 8           # GeckoTerminal "yeni havuz" listesinde kaç sayfa geriye gidilsin
-  age_min_minutes: 5          # 5 dakikadan genç coinlere bakma (veri oturmamış)
+  new_pool_pages: 10          # GeckoTerminal "yeni havuz" listesinde kaç sayfa geriye gidilsin (en fazla 10)
+  age_min_minutes: 2          # 2 dakikadan genç coinlere bakma (veri oturmamış)
   age_max_hours: 12           # 12 saatten yaşlıysa bu kategori değil
   mc_min: 30000               # $30K
   mc_max: 2000000             # $2M
