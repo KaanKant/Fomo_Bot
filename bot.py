@@ -11,6 +11,7 @@ Sadece bildirim gönderir; karar ve işlem tamamen kullanıcıdadır.
 Modlar:
   --mode scan    : tarama yap, uygun coinleri bildir (varsayılan)
   --mode report  : son günlerin sinyallerinin performans raporunu gönder
+  --mode erken   : yeni doğmuş coinlerde organik erken ilgi ara (yüksek risk)
   --mode test    : Telegram bağlantısını test et
   --dry-run      : Telegram'a göndermek yerine ekrana yaz
 """
@@ -770,9 +771,214 @@ def report_due(cfg, state):
     return now_tr.hour >= cfg.get("report_hour", 9) and state.get("last_report") != today, today
 
 
+# ------------------------------------------------------------------ erken giriş
+def gecko_pools(chain, path):
+    """GeckoTerminal havuz kayıtlarını ayrıntılı metriklerle döndürür."""
+    network = GECKO_NETWORKS.get(chain)
+    if not network:
+        return []
+    data = get_json(f"{GECKO}/networks/{network}/{path}",
+                    headers={"Accept": "application/json;version=20230302"})
+    out = []
+    for p in (data or {}).get("data") or []:
+        a = p.get("attributes") or {}
+        rel = p.get("relationships") or {}
+        base = (((rel.get("base_token") or {}).get("data") or {}).get("id") or "")
+        quote = (((rel.get("quote_token") or {}).get("data") or {}).get("id") or "")
+        base_addr = base.split("_", 1)[1] if "_" in base else ""
+        quote_addr = quote.split("_", 1)[1] if "_" in quote else ""
+        addr = quote_addr if base_addr.lower() in QUOTE_TOKENS else base_addr
+        if not addr or addr.lower() in QUOTE_TOKENS:
+            continue
+        tx = a.get("transactions") or {}
+        m15 = tx.get("m15") or {}
+        m5 = tx.get("m5") or {}
+        created = a.get("pool_created_at") or ""
+        try:
+            age_min = (datetime.now(timezone.utc) -
+                       datetime.fromisoformat(created.replace("Z", "+00:00"))).total_seconds() / 60
+        except ValueError:
+            age_min = None
+        out.append({
+            "chain": chain, "addr": addr, "name": (a.get("name") or "?").split(" / ")[0],
+            "price": fnum(a.get("base_token_price_usd")),
+            "mc": fnum(a.get("market_cap_usd")) or fnum(a.get("fdv_usd")),
+            "liq": fnum(a.get("reserve_in_usd")),
+            "vol1": fnum((a.get("volume_usd") or {}).get("h1")),
+            "chg5": fnum((a.get("price_change_percentage") or {}).get("m5")),
+            "chg1h": fnum((a.get("price_change_percentage") or {}).get("h1")),
+            "buyers15": int(fnum(m15.get("buyers"))), "sellers15": int(fnum(m15.get("sellers"))),
+            "buys15": int(fnum(m15.get("buys"))), "sells15": int(fnum(m15.get("sells"))),
+            "buyers5": int(fnum(m5.get("buyers"))), "sellers5": int(fnum(m5.get("sellers"))),
+            "age_min": age_min, "pool": a.get("address"),
+        })
+    time.sleep(2.1)
+    return out
+
+
+def insider_check(mint):
+    """RugCheck'in tespit ettiği bundle/insider ağının büyüklüğü (% arz)."""
+    rep = get_json(RUGCHECK.format(mint=mint))
+    if not rep:
+        return None
+    token = rep.get("token") or {}
+    nets = rep.get("insiderNetworks") or []
+    insider_pct = 0.0
+    supply = fnum(token.get("supply")) or 0
+    for n in nets:
+        if isinstance(n, dict):
+            amt = fnum(n.get("tokenAmount"))
+            if supply and amt:
+                insider_pct += amt / supply * 100
+    top_insider = sum(fnum(h.get("pct")) for h in (rep.get("topHolders") or [])
+                      if h.get("insider"))
+    lp_locked = None
+    for mk in rep.get("markets") or []:
+        pct = (mk.get("lp") or {}).get("lpLockedPct")
+        if isinstance(pct, (int, float)):
+            lp_locked = max(lp_locked or 0.0, float(pct))
+    creator_pct = 0.0
+    if supply and fnum(rep.get("creatorBalance")):
+        creator_pct = fnum(rep.get("creatorBalance")) / supply * 100
+    risks = [r.get("name", "?") for r in (rep.get("risks") or [])
+             if str(r.get("level", "")).lower() == "danger"]
+    return {
+        "mint_ok": not token.get("mintAuthority") and not token.get("freezeAuthority"),
+        "rugged": bool(rep.get("rugged")),
+        "insider_pct": round(max(insider_pct, top_insider), 2),
+        "insider_wallets": len(nets),
+        "lp_locked": lp_locked,
+        "creator_pct": round(creator_pct, 2),
+        "holders": rep.get("totalHolders"),
+        "danger": risks,
+        "score": rep.get("score_normalised", rep.get("score")),
+    }
+
+
+def early_filter(p, e):
+    """Erken giriş adayı için davranış filtresi. Geçerse None."""
+    if p["age_min"] is None or not (e["age_min_minutes"] <= p["age_min"] <= e["age_max_hours"] * 60):
+        return "yaş aralık dışı"
+    if not (e["mc_min"] <= p["mc"] <= e["mc_max"]):
+        return "MC aralık dışı"
+    if p["liq"] < e["liq_min"]:
+        return "likidite düşük"
+    if p["mc"] and p["liq"] / p["mc"] < e["liq_to_mc_min"]:
+        return "likidite/MC düşük"
+    if p["vol1"] < e["vol_h1_min"]:
+        return "hacim düşük"
+    if p["buyers15"] < e["buyers15_min"]:
+        return "alıcı sayısı az"
+    if p["buyers15"] < e["buyers_sellers_min"] * max(p["sellers15"], 1):
+        return "satış baskısı"
+    if p["buyers5"] < 1:
+        return "son 5 dk alım yok"
+    return None
+
+
+def format_early(p, sec):
+    liq_ratio = p["liq"] / p["mc"] * 100 if p["mc"] else 0
+    holders = sec.get("holders")
+    return (
+        f"<b>ERKEN GİRİŞ: {html.escape(p['name'])}</b> ({CHAIN_LABELS.get(p['chain'], p['chain'])})\n"
+        f"<i>Yüksek risk - coin {int(p['age_min'])} dakikalık</i>\n\n"
+        f"MC: {money(p['mc'])} | Likidite: {money(p['liq'])} (%{liq_ratio:.0f})\n"
+        f"1s hacim: {money(p['vol1'])} | 5 dk: {p['chg5']:+.0f}% | 1s: {p['chg1h']:+.0f}%\n"
+        f"Son 15 dk: <b>{p['buyers15']} farklı alıcı</b> / {p['sellers15']} satıcı "
+        f"({p['buys15']} alış / {p['sells15']} satış)\n"
+        f"Holder: {holders if holders else '?'} | "
+        f"LP kilitli: {('%%%.0f' % sec['lp_locked']) if sec.get('lp_locked') is not None else '?'}\n"
+        f"Insider/bundle payı: %{sec.get('insider_pct', 0):.1f} | "
+        f"Dev cüzdanı: %{sec.get('creator_pct', 0):.1f}\n\n"
+        f"<code>{p['addr']}</code>\n"
+        f"{links(p['chain'], p['addr'], '')}\n\n"
+        f"<i>Bu kategoride coinlerin çoğu sıfıra gider. Küçük pozisyon, "
+        f"2x'te ana parayı çek. Yatırım tavsiyesi değildir.</i>"
+    )
+
+
+def run_early(cfg, state, dry_run=False):
+    """Yeni doğmuş coinlerde organik erken ilgi arar (bot kümesi değil)."""
+    e = cfg.get("erken") or {}
+    if not e.get("aktif"):
+        log("erken giriş kapalı")
+        return 0
+    now = time.time()
+    cooldown = e.get("cooldown_hours", 12) * 3600
+    seen = state.setdefault("seen_erken", {})
+    state["seen_erken"] = {k: t for k, t in seen.items() if now - t < cooldown}
+    seen = state["seen_erken"]
+
+    pools, reasons = [], {}
+    for chain in e.get("chains", ["solana"]):
+        for path in ("new_pools", "trending_pools"):
+            pools += gecko_pools(chain, path)
+    uniq = {}
+    for p in pools:
+        key = f"{p['chain']}:{p['addr']}"
+        if key not in uniq or p["liq"] > uniq[key]["liq"]:
+            uniq[key] = p
+    log(f"{len(uniq)} yeni havuz incelendi")
+
+    adaylar = []
+    for key, p in uniq.items():
+        if now - seen.get(key, 0) < cooldown:
+            continue
+        why = early_filter(p, e)
+        if why:
+            reasons[why] = reasons.get(why, 0) + 1
+            continue
+        adaylar.append((key, p))
+    adaylar.sort(key=lambda kp: -kp[1]["buyers15"])
+
+    sent = 0
+    for key, p in adaylar:
+        if sent >= e.get("max_alerts_per_run", 2):
+            break
+        if p["chain"] != "solana":          # güvenlik kontrolü şimdilik Solana
+            reasons["ağ desteklenmiyor"] = reasons.get("ağ desteklenmiyor", 0) + 1
+            continue
+        sec = insider_check(p["addr"])
+        if not sec:
+            reasons["güvenlik verisi yok"] = reasons.get("güvenlik verisi yok", 0) + 1
+            continue
+        bad = None
+        if sec["rugged"] or sec["danger"]:
+            bad = "RugCheck riskli"
+        elif not sec["mint_ok"]:
+            bad = "mint/freeze yetkisi açık"
+        elif sec["lp_locked"] is not None and sec["lp_locked"] < e.get("lp_locked_min", 90):
+            bad = "LP kilitli değil"
+        elif sec["insider_pct"] > e.get("insider_max_pct", 15):
+            bad = f"insider/bundle payı yüksek (%{sec['insider_pct']:.0f})"
+        elif sec["creator_pct"] > e.get("creator_max_pct", 5):
+            bad = f"dev cüzdanı büyük (%{sec['creator_pct']:.0f})"
+        if bad:
+            reasons[bad] = reasons.get(bad, 0) + 1
+            seen[key] = now
+            continue
+        if send_telegram(format_early(p, sec), dry_run):
+            sent += 1
+            seen[key] = now
+            state.setdefault("signals", []).append({
+                "key": key, "chain": p["chain"], "addr": p["addr"], "symbol": p["name"],
+                "price": p["price"], "peak_price": p["price"], "mc": p["mc"], "ts": now,
+                "score": None, "sources": ["Erken giriş"],
+            })
+        time.sleep(0.5)
+
+    track_signals(cfg, state)
+    bump_stats(state, now, len(uniq), len(adaylar), 0, sent, reasons)
+    log(f"{len(adaylar)} aday, {sent} erken giriş bildirimi")
+    if reasons:
+        log("Elenme sebepleri:", json.dumps(reasons, ensure_ascii=False))
+    return sent
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--mode", default="scan", choices=["scan", "report", "test"])
+    ap.add_argument("--mode", default="scan",
+                    choices=["scan", "report", "test", "erken"])
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
@@ -783,8 +989,16 @@ def main():
 
     state = load_state()
     try:
-        if args.mode == "scan":
+        if args.mode == "erken":
+            run_early(cfg, state, args.dry_run)
+        elif args.mode == "scan":
             run_scan(cfg, state, args.dry_run)
+            # erken giriş kategorisi aynı taramada çalışır (ayrı cron gerekmez)
+            if (cfg.get("erken") or {}).get("aktif"):
+                try:
+                    run_early(cfg, state, args.dry_run)
+                except Exception as e:  # erken hatası ana taramayı düşürmesin
+                    log("Erken giriş taraması hata verdi:", e)
             # GitHub zamanlanmış çalıştırmaları bazen atlıyor; rapor saati geçtiyse
             # ve bugün rapor gitmediyse taramanın ardından raporu da gönder.
             due, today = report_due(cfg, state)
