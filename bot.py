@@ -949,7 +949,7 @@ def golge_ekle(state, key, p, sec, now):
     """
     golge = state.setdefault("golge", [])
     if any(g["key"] == key for g in golge):
-        return
+        return False
     golge.append({
         "key": key, "chain": p["chain"], "addr": p["addr"], "symbol": p["name"],
         "ts": now, "price": p["price"], "peak_price": p["price"], "last_price": p["price"],
@@ -967,6 +967,7 @@ def golge_ekle(state, key, p, sec, now):
             "holder": sec.get("holders"), "launchpad": bool(sec.get("launchpad")),
         },
     })
+    return True
 
 
 def track_golge(cfg, state):
@@ -1042,15 +1043,23 @@ def run_early(cfg, state, dry_run=False):
         gun.update({"tarih": bugun, "adet": 0})
     kalan_gun = e.get("max_alerts_per_day", 10) - gun["adet"]
 
-    sent = 0
+    veri_modu = bool(e.get("sadece_veri"))
+    sent = kayit = 0
     for key, p in adaylar:
-        if sent >= e.get("max_alerts_per_run", 1) or sent >= kalan_gun:
+        if veri_modu:
+            # Veri modunda bildirim gitmiyor; günlük bildirim tavanı burada
+            # geçerli değil. Tek sınır, tarama başına kaç RugCheck sorgusu.
+            if kayit >= e.get("veri_max_per_run", 5):
+                break
+        elif sent >= e.get("max_alerts_per_run", 1) or sent >= kalan_gun:
             if kalan_gun <= 0:
                 reasons["günlük bildirim tavanı doldu"] = len(adaylar)
             break
         if p["chain"] != "solana":          # güvenlik kontrolü şimdilik Solana
             reasons["ağ desteklenmiyor"] = reasons.get("ağ desteklenmiyor", 0) + 1
             continue
+        if veri_modu and any(g["key"] == key for g in state.get("golge", [])):
+            continue                        # zaten kayıtlı: boşuna RugCheck sorma
         sec = insider_check(p["addr"])
         if not sec:
             reasons["güvenlik verisi yok"] = reasons.get("güvenlik verisi yok", 0) + 1
@@ -1086,12 +1095,13 @@ def run_early(cfg, state, dry_run=False):
         # Bildirim gönderilsin ya da gönderilmesin, adayı ölçümleriyle birlikte
         # kaydet. Bu kayıtlar hangi ölçümün gerçekten yükselişi öngördüğünü
         # sonradan veriyle bulmamızı sağlıyor.
-        golge_ekle(state, key, p, sec, now)
+        yeni_kayit = golge_ekle(state, key, p, sec, now)
 
-        if e.get("sadece_veri"):
+        if veri_modu:
             reasons["sadece veri modu (bildirim kapalı)"] = \
                 reasons.get("sadece veri modu (bildirim kapalı)", 0) + 1
             seen[key] = now
+            kayit += 1 if yeni_kayit else 0
             time.sleep(0.5)     # RugCheck'i arka arkaya yormayalım
             continue
 
@@ -1109,7 +1119,7 @@ def run_early(cfg, state, dry_run=False):
     track_signals(cfg, state)
     track_golge(cfg, state)
     bump_stats(state, now, len(uniq), len(adaylar), 0, sent, reasons)
-    log(f"{len(adaylar)} aday, {sent} erken giriş bildirimi, "
+    log(f"{len(adaylar)} aday, {sent} bildirim, {kayit} yeni kayıt, "
         f"{len(state.get('golge', []))} gölge kaydı")
     if reasons:
         log("Elenme sebepleri:", json.dumps(reasons, ensure_ascii=False))
