@@ -1092,6 +1092,7 @@ def run_early(cfg, state, dry_run=False):
             reasons["sadece veri modu (bildirim kapalı)"] = \
                 reasons.get("sadece veri modu (bildirim kapalı)", 0) + 1
             seen[key] = now
+            time.sleep(0.5)     # RugCheck'i arka arkaya yormayalım
             continue
 
         if send_telegram(format_early(p, sec), dry_run):
