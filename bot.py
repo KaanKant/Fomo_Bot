@@ -21,6 +21,7 @@ import argparse
 import html
 import json
 import os
+import re
 import statistics
 import sys
 import time
@@ -138,15 +139,32 @@ def send_telegram(text, dry_run=False):
     if not token or not chat_id:
         log("HATA: TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID tanımlı değil")
         return False
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
     try:
         r = session.post(
-            f"https://api.telegram.org/bot{token}/sendMessage",
+            url,
             json={"chat_id": chat_id, "text": text, "parse_mode": "HTML",
                   "disable_web_page_preview": True},
             timeout=15,
         )
         log("Telegram yanıtı:", r.status_code, "" if r.ok else r.text[:200])
-        return r.ok
+        if r.ok:
+            return True
+        # HTML ayrıştırma hatası tüm mesajı çöpe atıyor (örn. metinde geçen "<500K").
+        # Böyle bir durumda mesaj sessizce kaybolmasın: etiketleri temizleyip düz
+        # metin olarak bir kez daha dene.
+        if r.status_code == 400 and "parse entities" in r.text:
+            duz = re.sub(r"<[^>]+>", "", text)
+            duz = html.unescape(duz)
+            r2 = session.post(
+                url,
+                json={"chat_id": chat_id, "text": duz, "disable_web_page_preview": True},
+                timeout=15,
+            )
+            log("Telegram düz metin yeniden deneme:", r2.status_code,
+                "" if r2.ok else r2.text[:200])
+            return r2.ok
+        return False
     except requests.RequestException as e:
         log("Telegram hatası:", e)
         return False
@@ -672,9 +690,14 @@ def _bucket(mc):
 
 
 def _summary(rows, label):
-    """rows: [(sinyal, şimdiki %, zirve %)] -> tek satır özet"""
+    """rows: [(sinyal, şimdiki %, zirve %)] -> tek satır özet.
+
+    Etiket burada HTML'e göre kaçışlanır: "<500K" gibi bir etiket ham gönderilirse
+    Telegram onu açılmış bir etiket sanıp TÜM mesajı reddediyor.
+    """
     if not rows:
         return None
+    label = html.escape(str(label))
     nowp = [r[1] for r in rows]
     peak = [r[2] for r in rows]
     hit = sum(1 for p in peak if p >= 50)
@@ -711,7 +734,7 @@ def run_report(cfg, state, dry_run=False):
     if len(by_src) > 1:
         lines.append("\n<b>Kaynağa göre</b>")
         for src, rr in sorted(by_src.items(), key=lambda kv: -len(kv[1])):
-            lines.append(_summary(rr, html.escape(src)))
+            lines.append(_summary(rr, src))
 
     # Market cap kırılımı
     by_mc = {}
