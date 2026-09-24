@@ -79,6 +79,10 @@ erken:
   launchpad_dexes: [pump, launchlab, dbc, moonshot, bonk, believe, heaven, bags, boop, virtuals]
   insider_max_pct: 10         # RugCheck insider/bundle ağı arzın en fazla %10'u
   creator_max_pct: 3          # coini çıkaran cüzdan en fazla %3
+  # VERİ MODU: ölçüm sonuçlarına göre bu kategori şu an bildirim göndermiyor,
+  # sadece adayları ölçümleriyle kaydediyor. Bildirimleri açmak için: false yap.
+  sadece_veri: true
+  golge_gun: 3                # gölge kayıtları kaç gün fiyat takibinde kalsın
   max_alerts_per_run: 1       # taramada en fazla 1 erken giriş bildirimi
   max_alerts_per_day: 10      # günde en fazla 10 erken giriş bildirimi (spam kalkanı)
   cooldown_hours: 12          # aynı coin 12 saat içinde tekrar bildirilmez
