@@ -779,12 +779,28 @@ def run_report(cfg, state, dry_run=False):
                  f"zirvede satsaydın {sum(20 * (1 + r[2] / 100) for r in rows):.0f}$ "
                  f"(yatırılan {invested}$, ücretler hariç)")
     lines += stats_summary(state, now)
+    lines += golge_ozeti(state)
     lines.append("\n<i>Zirve = sinyalden sonra görülen en yüksek fiyat (taramalar arasında "
                  "ölçüldüğü için yaklaşıktır). Fiyatı bulunamayan coinler -%100 sayılır.</i>")
 
     ok = send_telegram("\n".join(x for x in lines if x), dry_run)
     log(f"Rapor {'gönderildi' if ok else 'GÖNDERİLEMEDİ'} ({len(rows)} sinyal)")
     return ok
+
+
+def golge_ozeti(state):
+    """Günlük rapora 'veri toplama' satırı: bildirilmeyen adayların sonucu."""
+    golge = state.get("golge", [])
+    if not golge:
+        return []
+    z = []
+    for g in golge:
+        giris, zirve = fnum(g.get("price")), fnum(g.get("peak_price"))
+        z.append((zirve / giris - 1) * 100 if giris and zirve else -100.0)
+    tuttu = sum(1 for x in z if x >= 30)
+    return ["\n<b>Veri toplama (bildirilmeyen adaylar)</b>",
+            f"{len(golge)} kayıt | medyan zirve {statistics.median(z):+.0f}% | "
+            f"+%30 gören: {tuttu}"]
 
 
 def report_due(cfg, state):
@@ -925,6 +941,63 @@ def format_early(p, sec):
     )
 
 
+def golge_ekle(state, key, p, sec, now):
+    """Filtreleri geçen adayı ölçümleriyle birlikte 'gölge' listesine yazar.
+
+    Bildirim gönderilmiş olsa da olmasa da kaydedilir. Amaç ileride
+    "hangi ölçüm yükselişi öngörüyor" sorusunu tahminle değil veriyle yanıtlamak.
+    """
+    golge = state.setdefault("golge", [])
+    if any(g["key"] == key for g in golge):
+        return
+    golge.append({
+        "key": key, "chain": p["chain"], "addr": p["addr"], "symbol": p["name"],
+        "ts": now, "price": p["price"], "peak_price": p["price"], "last_price": p["price"],
+        "hist": [[0, p["price"]]],
+        "o": {  # ölçümler (kısa adlar: state dosyası şişmesin)
+            "yas": round(p["age_min"] or 0, 1),
+            "mc": round(p["mc"]), "liq": round(p["liq"]),
+            "likmc": round(p["liq"] / p["mc"], 3) if p["mc"] else 0,
+            "vol1": round(p["vol1"]),
+            "al15": p["buyers15"], "sat15": p["sellers15"], "al5": p["buyers5"],
+            "oran": round(p["buyers15"] / max(p["sellers15"], 1), 2),
+            "chg5": round(p["chg5"], 1), "chg1h": round(p["chg1h"], 1),
+            "dex": p.get("dex", ""), "lp": sec.get("lp_locked"),
+            "insider": sec.get("insider_pct"), "dev": sec.get("creator_pct"),
+            "holder": sec.get("holders"), "launchpad": bool(sec.get("launchpad")),
+        },
+    })
+
+
+def track_golge(cfg, state):
+    """Gölge kayıtlarının fiyatını günceller ve fiyat geçmişini biriktirir."""
+    now = time.time()
+    gun = cfg.get("erken", {}).get("golge_gun", 3)
+    golge = [g for g in state.get("golge", []) if now - g["ts"] < gun * 86400]
+    state["golge"] = golge[-400:]          # state dosyası sınırsız büyümesin
+    golge = state["golge"]
+    if not golge:
+        return
+    by_chain = {}
+    for g in golge:
+        by_chain.setdefault(g["chain"], []).append(g["addr"])
+    for chain, addrs in by_chain.items():
+        pairs = fetch_pairs(chain, list(dict.fromkeys(addrs)))
+        for g in golge:
+            if g["chain"] != chain:
+                continue
+            p = pairs.get(g["addr"])
+            price = fnum(p.get("priceUsd")) if p else 0.0
+            g["last_price"] = price
+            if price > fnum(g.get("peak_price")):
+                g["peak_price"] = price
+            dk = int((now - g["ts"]) / 60)
+            # aynı dakikaya ikinci bir nokta yazma (tarama içinde tekrar çağrılabiliyor)
+            if price > 0 and len(g["hist"]) < 80 and g["hist"][-1][0] != dk:
+                g["hist"].append([dk, price])
+    log(f"{len(golge)} gölge kaydı güncellendi")
+
+
 def run_early(cfg, state, dry_run=False):
     """Yeni doğmuş coinlerde organik erken ilgi arar (bot kümesi değil)."""
     e = cfg.get("erken") or {}
@@ -1009,6 +1082,18 @@ def run_early(cfg, state, dry_run=False):
             seen[key] = now
             continue
         sec["launchpad"] = launchpad
+
+        # Bildirim gönderilsin ya da gönderilmesin, adayı ölçümleriyle birlikte
+        # kaydet. Bu kayıtlar hangi ölçümün gerçekten yükselişi öngördüğünü
+        # sonradan veriyle bulmamızı sağlıyor.
+        golge_ekle(state, key, p, sec, now)
+
+        if e.get("sadece_veri"):
+            reasons["sadece veri modu (bildirim kapalı)"] = \
+                reasons.get("sadece veri modu (bildirim kapalı)", 0) + 1
+            seen[key] = now
+            continue
+
         if send_telegram(format_early(p, sec), dry_run):
             sent += 1
             gun["adet"] += 1
@@ -1021,8 +1106,10 @@ def run_early(cfg, state, dry_run=False):
         time.sleep(0.5)
 
     track_signals(cfg, state)
+    track_golge(cfg, state)
     bump_stats(state, now, len(uniq), len(adaylar), 0, sent, reasons)
-    log(f"{len(adaylar)} aday, {sent} erken giriş bildirimi")
+    log(f"{len(adaylar)} aday, {sent} erken giriş bildirimi, "
+        f"{len(state.get('golge', []))} gölge kaydı")
     if reasons:
         log("Elenme sebepleri:", json.dumps(reasons, ensure_ascii=False))
     return sent
