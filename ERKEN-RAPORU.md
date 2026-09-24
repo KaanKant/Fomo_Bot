@@ -1,77 +1,76 @@
 # Erken giriş teşhisi
 
-Tarih: 2026-09-23 19:36 UTC
-İncelenen havuz: 158
+Tarih: 2026-09-24 10:11 UTC
+İncelenen havuz: 103
 
 | Coin | DEX | Yaş (dk) | MC | Likidite | Lik/MC | 1s hacim | 15dk alıcı | satıcı | 5dk alıcı | Sonuç |
 |---|---|---|---|---|---|---|---|---|---|---|
-| GROK | pumpswap | 8 | $111.5K | $41.2K | %37 | $1.4K | 1724 | 6 | 1558 | hacim düşük |
-| ZEC | orca | 482090 | $153.90M | $2.95M | %2 | $1.15M | 1601 | 1570 | 611 | yaş aralık dışı |
-| Zecbra | pumpswap | 7 | $107.0K | $31.2K | %29 | $4.5K | 1230 | 42 | 899 | hacim düşük |
-| CURVEX | meteora-damm-v2 | 7 | $19.0K | $26.6K | %140 | $185.0K | 781 | 94 | 678 | MC aralık dışı |
-| CURVEX | pumpswap | 4 | $199.8K | $41.5K | %21 | $104.3K | 775 | 120 | 775 | **GEÇTİ** |
-| TIKTOK | pumpswap | 8 | $83.8K | $27.3K | %33 | $2.4K | 641 | 6 | 588 | hacim düşük |
-| OTC | pumpswap | 37803 | $7.72M | $613.3K | %8 | $51.3K | 570 | 231 | 201 | yaş aralık dışı |
-| MUSECLAW | pumpswap | 7 | $3.6K | $3.4K | %96 | $141.5K | 545 | 554 | 378 | MC aralık dışı |
-| CURVEX | pumpswap | 4 | $15.6K | $25.2K | %162 | $36.1K | 376 | 29 | 376 | MC aralık dışı |
-| LIFE | pump-fun | 4 | $4.3K | $3.4K | %78 | $34.1K | 372 | 350 | 372 | MC aralık dışı |
-| Attio | pumpswap | 7 | $786.8K | $254.9K | %32 | $342.8K | 309 | 116 | 275 | **GEÇTİ** |
-| STONK | meteora | 61005 | $249.46M | $2.81M | %1 | $575.2K | 268 | 402 | 52 | yaş aralık dışı |
-| Cateoween | pump-fun | 5 | $8.0K | $5.2K | %65 | $36.9K | 231 | 177 | 231 | MC aralık dışı |
-| OpenAI | pumpswap | 3 | $404.2K | $54.9K | %14 | $18.5K | 216 | 128 | 216 | **GEÇTİ** |
-| TICKER | pump-fun | 4 | $3.2K | $2.6K | %79 | $6.5K | 216 | 84 | 216 | MC aralık dışı |
-| CURVEX | pumpswap | 5 | $47.7K | $20.0K | %42 | $401 | 209 | 69 | 209 | hacim düşük |
-| LEVERHYPPO | meteora-damm-v2 | 8 | $72.5K | $2.7K | %4 | $17.6K | 197 | 197 | 193 | likidite düşük |
-| MUSECLAW | meteora-damm-v2 | 3 | $164.6K | $583 | %0 | $20.7K | 193 | 200 | 193 | likidite düşük |
-| 人生好物 | meteora-damm-v2 | 4 | $1 | $1 | %148 | $8.3K | 187 | 141 | 187 | MC aralık dışı |
-| HYPERCAT | meteora-damm-v2 | 7 | $1 | $1 | %152 | $11.0K | 184 | 172 | 114 | MC aralık dışı |
-| FIRE | meteora-damm-v2 | 8 | $1 | $2 | %260 | $11.1K | 184 | 177 | 184 | MC aralık dışı |
-| HACKA | pumpswap | 3 | $45.7K | $19.6K | %43 | $118 | 166 | 31 | 166 | hacim düşük |
-| ROBIN | meteora-dbc | 3 | $55.4K | $0 | %0 | $7.4K | 160 | 149 | 160 | likidite düşük |
-| PUMPCAT | pumpswap | 6667 | $264.0K | $58.4K | %22 | $58.8K | 149 | 105 | 65 | yaş aralık dışı |
-| WNSC | raydium-launchlab | 3 | $3.9K | $4.4K | %112 | $27.8K | 137 | 125 | 137 | MC aralık dışı |
-| TYWID | pump-fun | 8 | $4.2K | $3.6K | %86 | $17.9K | 135 | 116 | 103 | MC aralık dışı |
-| Bob | pump-fun | 5 | $3.2K | $2.6K | %81 | $6.2K | 124 | 52 | 124 | MC aralık dışı |
-| HYPERCAT | meteora-dbc | 3 | $55.7K | $0 | %0 | $4.9K | 119 | 107 | 119 | likidite düşük |
-| LIFE | pump-fun | 4 | $8.1K | $5.2K | %64 | $3.4K | 115 | 31 | 115 | MC aralık dışı |
-| ROBIN | meteora-damm-v2 | 4 | $0 | $1 | %213 | $4.0K | 115 | 107 | 115 | MC aralık dışı |
-| CURVEX | pumpswap | 4 | $50.6K | $19.8K | %39 | $201 | 114 | 38 | 114 | hacim düşük |
-| BUTTHOLE | pump-fun | 6 | $3.2K | $4.4K | %137 | $4.2K | 113 | 64 | 113 | MC aralık dışı |
-| WNSC | pump-fun | 3 | $6.1K | $4.3K | %70 | $2.5K | 107 | 32 | 107 | MC aralık dışı |
-| claude | pump-fun | 8 | $3.3K | $2.6K | %79 | $5.2K | 102 | 43 | 102 | MC aralık dışı |
-| April | pump-fun | 5 | $3.4K | $3.0K | %90 | $16.1K | 101 | 98 | 101 | MC aralık dışı |
-| CURVEX | pumpswap | 5 | $49.7K | $19.6K | %39 | $94 | 96 | 19 | 96 | hacim düşük |
-| Bonk | orca | 1693736 | $309.77M | $415.1K | %0 | $80.2K | 79 | 126 | 24 | yaş aralık dışı |
-| FOMOCAT | pump-fun | 8 | $3.4K | $2.7K | %79 | $11.1K | 78 | 75 | 2 | MC aralık dışı |
-| RuneBot | pump-fun | 7 | $3.2K | $2.6K | %80 | $12.0K | 77 | 76 | 43 | MC aralık dışı |
-| Scooby-Doo | pump-fun | 3 | $45.5K | $0 | %0 | $12.1K | 73 | 6 | 73 | likidite düşük |
-| PAID | pumpswap | 11534 | $8.59M | $530.1K | %6 | $97.9K | 73 | 54 | 29 | yaş aralık dışı |
-| Roblonks | pump-fun | 3 | $3.2K | $2.6K | %79 | $4.7K | 67 | 24 | 67 | MC aralık dışı |
-| claude | pump-fun | 8 | $3.2K | $2.6K | %81 | $4.7K | 67 | 22 | 67 | MC aralık dışı |
-| GP | meteora | 9545 | $23.57M | $859.4K | %4 | $302.6K | 67 | 116 | 14 | yaş aralık dışı |
-| HUSH | pump-fun | 4 | $6.9K | $5.1K | %74 | $5.9K | 54 | 30 | 54 | MC aralık dışı |
-| SS | meteora-dbc | 3 | $2.1K | $4.2K | %203 | $4.5K | 51 | 52 | 51 | MC aralık dışı |
-| EDG | meteora-dbc | 7 | $2.4K | $5.8K | %243 | $2.4K | 51 | 38 | 51 | MC aralık dışı |
-| SWEEP | pumpswap | 1395 | $97.0K | $31.2K | %32 | $33.1K | 50 | 37 | 15 | yaş aralık dışı |
-| MrBeast | pumpswap | 7 | $446.1K | $57.8K | %13 | $18.8K | 46 | 29 | 12 | **GEÇTİ** |
-| CATE | pumpswap | 85144 | $85.73M | $3.44M | %4 | $153.5K | 46 | 29 | 15 | yaş aralık dışı |
-| Z | meteora-dbc | 4 | $1.8K | $1.8K | %100 | $811 | 37 | 18 | 37 | MC aralık dışı |
-| JEANPHIL | pumpswap | 5790 | $5.51M | $312.4K | %6 | $120.2K | 37 | 47 | 10 | yaş aralık dışı |
-| biketyson | pumpswap | 29001 | $1.97M | $197.4K | %10 | $34.2K | 35 | 22 | 3 | yaş aralık dışı |
-| BS | pump-fun | 4 | $3.8K | $3.1K | %82 | $2.4K | 34 | 19 | 34 | MC aralık dışı |
-| PUMP | pumpswap | 628001 | $1.87B | $21.89M | %1 | $244.2K | 34 | 57 | 17 | yaş aralık dışı |
-| USELESS | raydium | 721753 | $296.43M | $5.79M | %2 | $118.1K | 32 | 51 | 6 | yaş aralık dışı |
-| CATALYST | raydium-launchlab | 5 | $4.1K | $4.1K | %99 | $4.3K | 29 | 26 | 29 | MC aralık dışı |
-| ARCHIBROWN | pumpswap | 643 | $351.6K | $55.9K | %16 | $39.2K | 29 | 50 | 14 | alıcı sayısı az |
-| KCAT | pumpswap | 1994 | $270.1K | $51.8K | %19 | $54.0K | 28 | 36 | 11 | yaş aralık dışı |
-| STOOL | pump-fun | 4 | $3.3K | $2.6K | %79 | $3.0K | 27 | 27 | 27 | MC aralık dışı |
+| BEAST | pumpswap | 9 | $485.1K | $59.9K | %12 | $22.9K | 2325 | 689 | 100 | **GEÇTİ** |
+| Poly | meteora-damm-v2 | 7 | $19.0K | $26.6K | %140 | $96.6K | 1410 | 51 | 1042 | MC aralık dışı |
+| TURF | pumpswap | 9 | $93.4K | $25.5K | %27 | $208.1K | 1158 | 773 | 740 | satış baskısı |
+| TURF | pumpswap | 6 | $27.2K | $33.4K | %123 | $136.0K | 1084 | 49 | 1059 | MC aralık dışı |
+| Meme | pumpswap | 9 | $19.0K | $28.2K | %149 | $437.9K | 880 | 102 | 592 | MC aralık dışı |
+| 币安中秋 | pumpswap | 9 | $41.4K | $48.6K | %117 | $223.3K | 759 | 48 | 447 | **GEÇTİ** |
+| TURF | pumpswap | 6 | $18.4K | $28.0K | %152 | $221.7K | 596 | 112 | 585 | MC aralık dışı |
+| CODE | pumpswap | 5 | $83.3K | $27.5K | %33 | $2.4K | 568 | 5 | 568 | hacim düşük |
+| HYPE | pumpswap | 9 | $192.3K | $44.0K | %23 | $1.91M | 487 | 54 | 285 | **GEÇTİ** |
+| Meme | meteora-damm-v2 | 9 | $18.4K | $27.5K | %149 | $353.6K | 380 | 87 | 111 | MC aralık dışı |
+| TCAT | pump-fun | 9 | $13.9K | $6.9K | %49 | $35.5K | 324 | 202 | 178 | MC aralık dışı |
+| TURF | pumpswap | 9 | $55.0K | $21.4K | %39 | $1.7K | 213 | 116 | 199 | hacim düşük |
+| Punped | pumpswap | 6 | $1.8K | $120.7K | %6682 | $43.7K | 207 | 48 | 173 | MC aralık dışı |
+| ZEC | orca | 482965 | $147.32M | $2.92M | %2 | $607.6K | 205 | 170 | 153 | yaş aralık dışı |
+| TCAT | meteora-damm-v2 | 7 | $1 | $1 | %157 | $14.3K | 195 | 180 | 60 | MC aralık dışı |
+| SDOG | meteora-damm-v2 | 10 | $1 | $1 | %138 | $14.7K | 190 | 192 | 190 | MC aralık dışı |
+| PAC | meteora-damm-v2 | 8 | $1 | $3.7K | %545362 | $52.1K | 167 | 147 | 141 | MC aralık dışı |
+| MATERIALSPAD | pump-fun | 9 | $3.6K | $2.8K | %79 | $18.8K | 154 | 146 | 6 | MC aralık dışı |
+| SI | pumpswap | 364 | $574.9K | $71.0K | %12 | $108.0K | 134 | 135 | 82 | alıcı sayısı az |
+| FUNKOS | pumpswap | 319 | $208.0K | $44.7K | %22 | $34.5K | 95 | 84 | 32 | alıcı sayısı az |
+| CATE | pumpswap | 86019 | $86.95M | $3.44M | %4 | $124.8K | 91 | 28 | 2 | yaş aralık dışı |
+| familiars | pumpswap | 649 | $2.12M | $154.6K | %7 | $159.6K | 78 | 124 | 26 | MC aralık dışı |
+| PUMPCAT | pumpswap | 7542 | $105.8K | $36.5K | %35 | $24.5K | 76 | 83 | 36 | yaş aralık dışı |
+| GP | meteora | 10420 | $27.49M | $814.7K | %3 | $165.3K | 75 | 66 | 24 | yaş aralık dışı |
+| BLUF | pumpswap | 1101 | $222.9K | $47.8K | %21 | $16.4K | 71 | 66 | 44 | yaş aralık dışı |
+| BLUEPHAT | pump-fun | 9 | $3.4K | $2.8K | %81 | $7.2K | 69 | 53 | 23 | MC aralık dışı |
+| UNTXD | pumpswap | 620 | $76.3K | $25.2K | %33 | $7.6K | 68 | 14 | 1 | hacim düşük |
+| goon | pumpswap | 697 | $628.4K | $85.6K | %14 | $34.4K | 60 | 58 | 24 | alıcı sayısı az |
+| USELESS | raydium | 722628 | $276.25M | $5.55M | %2 | $175.2K | 57 | 42 | 8 | yaş aralık dışı |
+| STONK | meteora | 61880 | $278.72M | $3.09M | %1 | $141.2K | 52 | 34 | 11 | yaş aralık dışı |
+| TURFCAT | pump-fun | 9 | $4.2K | $3.6K | %87 | $5.6K | 45 | 38 | 27 | MC aralık dışı |
+| ABC | meteora-damm-v2 | 6 | $11.6K | $0 | %0 | $4.2K | 45 | 14 | 18 | MC aralık dışı |
+| JEANPHIL | pumpswap | 6665 | $4.15M | $269.3K | %6 | $77.0K | 43 | 40 | 31 | yaş aralık dışı |
+| SHARTGUY | pump-fun | 7 | $3.2K | $2.5K | %79 | $10.7K | 41 | 42 | 10 | MC aralık dışı |
+| coincoin | pump-fun | 8 | $3.3K | $2.6K | %79 | $3.8K | 33 | 30 | 25 | MC aralık dışı |
+| AI | pump-fun | 9 | $3.3K | $2.8K | %83 | $2.9K | 27 | 30 | 27 | MC aralık dışı |
+| FOOTY | pump-fun | 6 | $3.2K | $2.8K | %86 | $2.1K | 27 | 21 | 27 | MC aralık dışı |
+| NIGGER | pump-fun | 9 | $4.0K | $3.1K | %78 | $1.5K | 25 | 11 | 21 | MC aralık dışı |
+| OTC | pumpswap | 38678 | $5.63M | $523.6K | %9 | $26.7K | 25 | 63 | 9 | yaş aralık dışı |
+| 5 | pump-fun | 8 | $6.0K | $4.2K | %70 | $2.4K | 23 | 11 | 7 | MC aralık dışı |
+| PUMP | pumpswap | 628876 | $1.79B | $21.37M | %1 | $286.1K | 18 | 26 | 5 | yaş aralık dışı |
+| PAID | pumpswap | 12409 | $9.99M | $571.8K | %6 | $79.0K | 16 | 45 | 4 | yaş aralık dışı |
+| Meme | meteora-damm-v2 | 7 | $10.4K | $0 | %0 | $474 | 14 | 1 | 0 | MC aralık dışı |
+| BALUT | pump-fun | 7 | $29 | $12 | %39 | $199 | 13 | 9 | 12 | MC aralık dışı |
+| $BITFOOTS | pump-fun | 6 | $46.0K | $0 | %0 | $349 | 11 | 4 | 11 | likidite düşük |
+| PEPENOM | pumpswap | 19277 | $201.4K | $120.1K | %60 | $1.5K | 8 | 3 | 6 | yaş aralık dışı |
+| GOOPER | pump-fun | 9 | $4.2K | $878 | %21 | $5.8K | 7 | 6 | 7 | MC aralık dışı |
+| Meme | meteora-damm-v2 | 9 | $10.1K | $0 | %0 | $232 | 7 | 0 | 0 | MC aralık dışı |
+| IFM | pump-fun | 6 | $3.2K | $2.5K | %79 | $1.4K | 7 | 7 | 7 | MC aralık dışı |
+| Meme | meteora-damm-v2 | 6 | $10.1K | $0 | %0 | $231 | 7 | 0 | 7 | MC aralık dışı |
+| ARCHIBROWN | pumpswap | 1518 | $345.4K | $59.0K | %17 | $6.4K | 7 | 12 | 4 | yaş aralık dışı |
+| INUX | pump-fun | 7 | $3.3K | $1.1K | %33 | $1.7K | 6 | 5 | 6 | MC aralık dışı |
+| cap | pump-fun | 7 | $3.8K | $1.4K | %38 | $778 | 6 | 5 | 1 | MC aralık dışı |
+| GO | meteora-damm-v2 | 8 | $972.0K | $13 | %0 | $1 | 6 | 3 | 5 | likidite düşük |
+| FRIED | pump-fun | 9 | $335 | $131 | %39 | $130 | 6 | 6 | 6 | MC aralık dışı |
+| SITCAT | pump-fun | 7 | $3.5K | $2.8K | %79 | $309 | 5 | 5 | 1 | MC aralık dışı |
+| Pikachu | pump-fun | 9 | $4.0K | $3.1K | %77 | $358 | 5 | 4 | 0 | MC aralık dışı |
+| SXSN | pump-fun | 6 | $215 | $86 | %40 | $241 | 5 | 5 | 4 | MC aralık dışı |
+| GMO | pump-fun | 8 | $2.5K | $1.1K | %43 | $290 | 4 | 4 | 4 | MC aralık dışı |
+| lptp | pump-fun | 10 | $1.3K | $575 | %45 | $1.1K | 4 | 4 | 0 | MC aralık dışı |
 
-## Davranış filtresini geçen: 4
+## Davranış filtresini geçen: 3
 
-- **CURVEX** (`DhiZHi3ELridU35NE4egmTanGTihNLu4R3t6RFdX5rPn`) — DEX: pumpswap (launchpad), mint/freeze kapalı: True, LP kilitli: 79.25347817482283, insider/bundle: %0.0, dev: %0.0, holder: 1164, riskler: Large Amount of LP Unlocked
-- **Attio** (`BgJjiTsE6gYNzLKBM3dvAfRgYDjxPN2XfPJZRPg9qkmf`) — DEX: pumpswap (launchpad), mint/freeze kapalı: True, LP kilitli: 100.0, insider/bundle: %5.91, dev: %0.0, holder: 414, riskler: Large Amount of LP Unlocked
-- **OpenAI** (`22sQGfSNtdCHPnMWdanRjyHnKq2h8o2A8ToPgYgZpump`) — DEX: pumpswap (launchpad), mint/freeze kapalı: True, LP kilitli: 100.0, insider/bundle: %0.0, dev: %34.68, holder: 2045, riskler: yok
-- **MrBeast** (`BAPkiPh5PinYsMVcKyWrqnyBrF6WYjS6ev2xvh1Qpump`) — DEX: pumpswap (launchpad), mint/freeze kapalı: True, LP kilitli: 100.0, insider/bundle: %96.62, dev: %0.0, holder: 1942, riskler: yok
+- **BEAST** (`HxhhBA5Nq6DmMv2oumGdqeWjbzAyAxPLaRZKEsekpump`) — DEX: pumpswap (launchpad), mint/freeze kapalı: True, LP kilitli: 100.0, insider/bundle: %0.0, dev: %0.0, holder: 2322, riskler: yok
+- **币安中秋** (`5b4i1p3LtuoEWfWBQWPEQnhSzAq8ng1SoVX1x9CU3FWh`) — DEX: pumpswap (launchpad), mint/freeze kapalı: True, LP kilitli: 9.034075999366529e-10, insider/bundle: %0.0, dev: %0.0, holder: 917, riskler: Large Amount of LP Unlocked
+- **HYPE** (`4LMgCxNmLyAEnjrkcQtBxN1RLibQgfaHHsfwPcksFCJc`) — DEX: pumpswap (launchpad), mint/freeze kapalı: True, LP kilitli: 64.19067790905206, insider/bundle: %0.0, dev: %0.0, holder: 585, riskler: Large Amount of LP Unlocked
 
 ## Kullanılan eşikler
 
@@ -86,11 +85,14 @@ Tarih: 2026-09-23 19:36 UTC
 - liq_to_mc_min: 0.05
 - vol_h1_min: 20000
 - vol_young_min: 5000
-- buyers15_min: 40
-- buyers_sellers_min: 1.3
+- buyers15_min: 150
+- buyers_sellers_min: 2.0
 - lp_locked_min: 90
-- launchpad_dexes: ['pump', 'launchlab', 'moonshot', 'bonk', 'believe', 'heaven', 'bags', 'boop', 'virtuals']
-- insider_max_pct: 15
-- creator_max_pct: 5
-- max_alerts_per_run: 2
+- launchpad_dexes: ['pump', 'launchlab', 'dbc', 'moonshot', 'bonk', 'believe', 'heaven', 'bags', 'boop', 'virtuals']
+- insider_max_pct: 10
+- creator_max_pct: 3
+- sadece_veri: True
+- golge_gun: 3
+- max_alerts_per_run: 1
+- max_alerts_per_day: 10
 - cooldown_hours: 12
