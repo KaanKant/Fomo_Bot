@@ -535,6 +535,11 @@ def track_signals(cfg, state):
             if price > fnum(x.get("peak_price")):
                 x["peak_price"] = price
                 x["peak_ts"] = now
+            # Fiyat geçmişi: çıkış kuralı backtest'i bunu kullanıyor
+            hist = x.setdefault("hist", [[0, fnum(x.get("price"))]])
+            dk = int((now - x["ts"]) / 60)
+            if price > 0 and len(hist) < 80 and hist[-1][0] != dk:
+                hist.append([dk, price])
     log(f"{len(sigs)} sinyalin fiyatı güncellendi")
 
 
