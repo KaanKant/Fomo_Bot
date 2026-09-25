@@ -1,52 +1,54 @@
 # Cüzdan bulucu
 
-Tarih: 2026-09-25 08:22 UTC
+Tarih: 2026-09-25 08:26 UTC
 
 Yöntem: her coinin zincir üstü sahip listesi çekilir, sonra kesiştirilir.
 
 | Coin | Mint | Sahip sayısı |
 |---|---|---|
-| FEELSGOOD | `HgcxVs6kJhPAaGqnPNGaa7zYgNT49hJrLufiqcNMuYZT` | 7742 |
+| FEELSGOOD | `HgcxVs6kJhPAaGqnPNGaa7zYgNT49hJrLufiqcNMuYZT` | 7741 |
+| AQUA | `AQVcP67EpMyu4cBZZjqMu91cVsWy1aX98JmcZm1FyY9` | 1727 |
 
-## Hepsinde birden görünen cüzdan: **7742**
+## Hepsinde birden görünen cüzdan: **197**
 
-| Cüzdan | FEELSGOOD | Beklenene uyan |
-|---|---|---|
-| `8qBf8Qi1294QYudtj3uFDcFjhAK3aHJH2zbXT6RRuoRQ` | 5,507,955 | 1/1 |
-| `BWsYpL9bKzJ98DN8dZDoqZMZ5Ab3HS6muTz6QJvyZmEz` | 5,246,495 | 1/1 |
-| `Hpo766ufzaLce4FwvebarGDgFqMwnb2WKFkkUn7z3WLz` | 5,104,930 | 1/1 |
-| `AH5EYgxtFekzZsSqD6SjvtMtk3nWnFYi3AfL1AdcGMd9` | 5,057,973 | 1/1 |
-| `D5ooHXpKNvabXHwJQdmSiwtBiWegq1Rste4w9vGAi7s1` | 5,030,858 | 1/1 |
-| `Br3epnm6osfBshxMW29jMA8yaPgsBKgMNcfkC9sD5Axr` | 5,028,670 | 1/1 |
-| `4yMQPYwEVcJKScnqjvmdXJ5JXLxCQcxoMGLk4zPnQjEX` | 5,001,536 | 1/1 |
-| `H6csbyTfsMqsPnPKR9U4heJV9Kcy511ixiskKB5aDV8s` | 5,000,847 | 1/1 |
-| `c2bLVAwqC9KvYwXmj228msWXQCnfx1qY89knTEPZP42` | 5,000,014 | 1/1 |
-| `HQc67E7fzXGHo5vo6Q1QoaYk37JcXFNDjS2DA7w9h9TL` | 4,810,514 | 1/1 |
-| `GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL` | 37,344,318 | 0/1 |
-| `9y5pJPR2Mz3iB9dvbespmbEeCSAFWGEaL3zg1vDJYs1a` | 27,510,353 | 0/1 |
-| `DjSoVSzsNTVmUVED1iM9qaZJ35WuGS6VbEQASK7exzxk` | 22,261,690 | 0/1 |
-| `FchhBNr14ih7rZrzr2QDSTKmxbiNoW9aX8gbXC4CcyM5` | 22,253,260 | 0/1 |
-| `4y2T1ghykCTq4EddoXjptZamk4qAsqcZw6eKxS8jdvE1` | 22,096,068 | 0/1 |
-| `H163EB5yE1kNHa2rKzRe4WKoGcoEnGQUo9DtDbE9RjNV` | 21,695,290 | 0/1 |
-| `HAajkdbtE6jQ1SDYL94nZ3HSjYYh6X4HTDE5frkjThwC` | 16,866,407 | 0/1 |
-| `91dY8u9knzsejMgP7cFAohdug6UzhwszUcMcR3bVjE8L` | 14,997,354 | 0/1 |
-| `a4vf9ETLCLRW9s6RmydwfnyJCkn1y8zTwkG8eW5F1uX` | 14,162,870 | 0/1 |
-| `7KUN7A6bBPJPRhwgWxtLrrUmaXyo5RZWvhug6jX5pCR4` | 13,980,665 | 0/1 |
-| `8eRh3PYkBpfADNwkrRuXs6SjiNpNMCL8zCR9SVh3bMQF` | 13,753,987 | 0/1 |
-| `7qWNvn9bDcMrY4VUxAacrLw5nSKoabHNUKWZ6ojow5FK` | 13,614,040 | 0/1 |
-| `cHXoxtoBWKRDDS4BCmCApu8Z2p5DmS5ggux4L6hTu62` | 12,454,026 | 0/1 |
-| `2ruNCVtNtcnRv4JRMXW2ctzDAsDST31hzecEBezzqVi3` | 12,000,001 | 0/1 |
-| `ECnH8TPNKQGDdfEE9mkQDFYuMg43kaZz4jjGLaXajcH6` | 11,733,019 | 0/1 |
-| `AVjmfB4Znarp5mSdwSciNkk7v51XGU1fwrrhZoyjTFox` | 11,392,722 | 0/1 |
-| `FBQQFimCa9MRjw7cRguuLYs38B8xrBhQPAx4yyHBLLXX` | 11,162,152 | 0/1 |
-| `F6MmiLD7azY87uijwqNWN8DeG53eDuAXHZLupudExbCP` | 10,766,358 | 0/1 |
-| `dV5RU4UZXs32eCwNzYbtzp6amxHYPLsyBW3Rc7HNjGD` | 10,724,034 | 0/1 |
-| `9rvWrPq4g4NehCqhczPbRh1TB1L9KsJoZHpcf7hjGeFj` | 10,460,931 | 0/1 |
+| Cüzdan | FEELSGOOD | AQUA | Beklenene uyan |
+|---|---|---|---|
+| `Hpo766ufzaLce4FwvebarGDgFqMwnb2WKFkkUn7z3WLz` | 5,104,930 | 4,216,135 | 2/2 |
+| `2heJbC32Tpfcb3nbUb5ER61K11FGZVfVGtVnDm6LDogF` | 49 | 10,094,000 | 0/2 |
+| `58DKz1ogYsKFRH5ReKbMPDTTFqA46VRVgnZgvxijYwUi` | 3,400,370 | 3,571,901 | 0/2 |
+| `498g1rVnFcnjBjpfw1xyqA1WvgQXUU8RWuELjxkjAayQ` | 276 | 5,047,000 | 0/2 |
+| `3ZqnSJisaCptQN6csgmRCuHbgLHHkaFbJexB8cpYSPJF` | 1,132,824 | 2,802,320 | 0/2 |
+| `6rMzwTpKTJi3vi7nT4kNFC6em2VoFa1w6GoCPcYMafnU` | 17 | 2,286,877 | 0/2 |
+| `DnxH2ddm2D7FtAmtJHDpWfxLFNYB2ak2o47wnDMwm3WT` | 786,745 | 1,256,898 | 0/2 |
+| `CYuNkf84vXMwioWJSDaTPAHdUojb3DA4E267KWnFMirM` | 59 | 1,900,287 | 0/2 |
+| `4fSJmRxRF5uQctx4PWnahoqoF7VPtvp7FXvHqQM5v71c` | 332,188 | 864,071 | 0/2 |
+| `82x8HicoorarGot1GswAVMG9EQQ2sZ7Q8rPcwCL8oTRF` | 2,188 | 1,128,245 | 0/2 |
+| `Dw14m9NX2U8PKK1v6LJYJmy2KkjfUfxtTAWLSSonWHi6` | 37 | 1,061,592 | 0/2 |
+| `8RWZvXuZBraouZtPRbH6CUSKTUbwSmrwQJzRaS2mAiYB` | 211 | 1,002,376 | 0/2 |
+| `A7cKxGL1vG2icFbrSg7eQkvLkzuA7UCrBkPaWefFCt5X` | 811,658 | 66,103 | 0/2 |
+| `G21NcbDWNmL4mgMHJyAiEDwEvW6f8nk6fhpiYxbmxgN2` | 25 | 870,017 | 0/2 |
+| `4J3Wod8XpomZFEdWhcpyuXYexc1W8oBNQH81fLHDirEP` | 350,064 | 499,236 | 0/2 |
+| `C2Vn5KVoBm2zQ6v4n1nMYi1yXje8ZqW8KnF6QujaUFiy` | 628 | 720,016 | 0/2 |
+| `Cq7M6mi9SbzTy62c5SpWt9Ad81ycg9LfEHdBa8XeVugj` | 130 | 644,628 | 0/2 |
+| `EHYt3ogo74mSS3MT9ynu744zNMykMA4DMnEMd2UNK3y2` | 619,877 | 5,992 | 0/2 |
+| `28UMLxmfXt53aG9iD2B5wDnHnBWLhrkLP6J4D4muTbtY` | 123,602 | 480,476 | 0/2 |
+| `AEXyLvPe6Bz2vWwYhwdEPUnuyyJkSHzZtJtMMQ663Pgg` | 9,834 | 547,713 | 0/2 |
+| `8exLyoQDvyRN4T3LzoLUxUe1Yfgxwgpr1a829BjzK8Gr` | 494,282 | 62,226 | 0/2 |
+| `4CTvEe93dhb94r5R667zKgri3X4VEg6tNVeseybbgoUn` | 7 | 451,833 | 0/2 |
+| `6G9MBY7Uwk2SvVZsgSp8kdZc6Q24N71u5SdTWtNLm1NU` | 213,645 | 108,877 | 0/2 |
+| `BACUp7io44jNYYrrr6CuK3dGFoa921cE8FdTkzfQ862L` | 57,656 | 263,004 | 0/2 |
+| `DGDLs1itcne44VSbG3tdrHppzEvoEGfc2v2oDNTNYTGE` | 76,452 | 237,598 | 0/2 |
+| `CrJ7dDcq5Zz1c8Y8EfSBh8YKxn4rrk7kyHHZdRsrG7HE` | 311,602 | 241 | 0/2 |
+| `9Re7R9jQrDtkUoBoKJMLwfk8ZCcR5w4yZzaP1p4GVYnj` | 136,610 | 156,348 | 0/2 |
+| `6cbwhVqYR9mE1xTU73kKFwnEAFLuka9ewkFcVRZEnbH` | 84,468 | 202,868 | 0/2 |
+| `DLX4Z9GtNqmj7Eugre8h2VHiGbPbRfRx76qhrkMjwf3S` | 150,002 | 118,027 | 0/2 |
+| `8R2HzBQARVvKmha98y8RLbLqpz3QLpBgXyRcaDUaTwYu` | 24,469 | 226,255 | 0/2 |
 
 ## Beklenen miktarlar (FOMO'da görünen)
 
 - FEELSGOOD: 5,100,000
+- AQUA: 4,200,000
 
 ## Sonuç
 
-10 cüzdan tüm miktarlara uyuyor; ayırt etmek için bir coin daha ekle.
+Tek eşleşme: **`Hpo766ufzaLce4FwvebarGDgFqMwnb2WKFkkUn7z3WLz`** — bu cüzdan yüksek ihtimalle aradığımız kişi.
