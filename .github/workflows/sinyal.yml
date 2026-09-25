@@ -9,7 +9,7 @@ on:
       mode:
         description: "Mod"
         type: choice
-        options: [scan, report, test, erken]
+        options: [scan, report, test, erken, cuzdan]
         default: test
 
 concurrency:
@@ -41,6 +41,7 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          HELIUS_API_KEY: ${{ secrets.HELIUS_API_KEY }}
           INPUT_MODE: ${{ github.event.inputs.mode }}
           SCHEDULE: ${{ github.event.schedule }}
         run: |
