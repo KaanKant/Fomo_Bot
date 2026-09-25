@@ -1,0 +1,40 @@
+name: Cuzdan bulucu
+
+on:
+  workflow_dispatch:
+    inputs:
+      mintler:
+        description: "isim:mint:beklenen,isim:mint:beklenen"
+        required: true
+        default: "FEELSGOOD:HgcxVs6kJhPAaGqnPNGaa7zYgNT49hJrLufiqcNMuYZT:5100000"
+
+permissions:
+  contents: write
+
+jobs:
+  bul:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Cuzdani bul
+        env:
+          HELIUS_API_KEY: ${{ secrets.HELIUS_API_KEY }}
+          MINTLER: ${{ github.event.inputs.mintler }}
+        run: python tani_cuzdan.py
+
+      - name: Sonucu depoya yaz
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CUZDAN-BUL.md
+          git commit -m "Cuzdan bulucu sonucu" || echo "degisiklik yok"
+          git push
