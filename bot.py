@@ -852,8 +852,10 @@ def gecko_pools(chain, path, page=None):
             "mc": fnum(a.get("market_cap_usd")) or fnum(a.get("fdv_usd")),
             "liq": fnum(a.get("reserve_in_usd")),
             "vol1": fnum((a.get("volume_usd") or {}).get("h1")),
+            "vol24": fnum((a.get("volume_usd") or {}).get("h24")),
             "chg5": fnum((a.get("price_change_percentage") or {}).get("m5")),
             "chg1h": fnum((a.get("price_change_percentage") or {}).get("h1")),
+            "chg24": fnum((a.get("price_change_percentage") or {}).get("h24")),
             "buyers15": int(fnum(m15.get("buyers"))), "sellers15": int(fnum(m15.get("sellers"))),
             "buys15": int(fnum(m15.get("buys"))), "sells15": int(fnum(m15.get("sells"))),
             "buyers5": int(fnum(m5.get("buyers"))), "sellers5": int(fnum(m5.get("sellers"))),
@@ -969,6 +971,11 @@ def golge_ekle(state, key, p, sec, now, kaynak="erken"):
             "al15": p["buyers15"], "sat15": p["sellers15"], "al5": p["buyers5"],
             "oran": round(p["buyers15"] / max(p["sellers15"], 1), 2),
             "chg5": round(p["chg5"], 1), "chg1h": round(p["chg1h"], 1),
+            # Hacim ivmesi: son 1 saat, günlük ortalamanın kaç katı.
+            # chg24 ile birlikte okunur: yüksek ivme + düşük chg24 = taban kırılıyor,
+            # yüksek ivme + yüksek chg24 = fiyat çoktan uçmuş.
+            "mom": round(p.get("vol1", 0) * 24 / p["vol24"], 2) if p.get("vol24") else 0,
+            "chg24": round(p.get("chg24", 0), 1),
             "dex": p.get("dex", ""), "lp": sec.get("lp_locked"),
             "insider": sec.get("insider_pct"), "dev": sec.get("creator_pct"),
             "holder": sec.get("holders"), "launchpad": bool(sec.get("launchpad")),
@@ -1003,7 +1010,27 @@ def track_golge(cfg, state):
             # aynı dakikaya ikinci bir nokta yazma (tarama içinde tekrar çağrılabiliyor)
             if price > 0 and len(g["hist"]) < 80 and g["hist"][-1][0] != dk:
                 g["hist"].append([dk, price])
-    log(f"{len(golge)} gölge kaydı güncellendi")
+    # Holder hızı: kayıttan ~1 saat sonra bir kez daha ölç, saatlik artışı yaz.
+    # Tarama başına en fazla 3 sorgu, böylece RugCheck'i yormuyoruz.
+    olculen = 0
+    for g in golge:
+        o = g.get("o") or {}
+        if o.get("holder_son") is not None or not o.get("holder"):
+            continue
+        if g.get("chain") != "solana" or olculen >= 3:
+            continue
+        yas_dk = (now - g["ts"]) / 60
+        if not 45 <= yas_dk <= 180:
+            continue
+        sec = insider_check(g["addr"])
+        if sec and sec.get("holders"):
+            o["holder_son"] = sec["holders"]
+            o["holder_dk"] = round(yas_dk)
+            o["holder_saatlik"] = round((sec["holders"] - o["holder"]) / max(yas_dk / 60, 0.1))
+            olculen += 1
+        time.sleep(0.4)
+
+    log(f"{len(golge)} gölge kaydı güncellendi, {olculen} holder hızı ölçüldü")
 
 
 # ------------------------------------------------------------------ cüzdan takibi
@@ -1103,7 +1130,9 @@ def run_cuzdan(cfg, state, dry_run=False):
                 "price": fnum(pair.get("priceUsd")), "mc": mc,
                 "liq": fnum((pair.get("liquidity") or {}).get("usd")),
                 "vol1": fnum((pair.get("volume") or {}).get("h1")),
+                "vol24": fnum((pair.get("volume") or {}).get("h24")),
                 "chg5": 0.0, "chg1h": fnum((pair.get("priceChange") or {}).get("h1")),
+                "chg24": fnum((pair.get("priceChange") or {}).get("h24")),
                 "buyers15": 0, "sellers15": 0, "buys15": 0, "sells15": 0, "buyers5": 0,
                 "age_min": max(yas_dk, 0), "pool": pair.get("pairAddress"), "dex": pair.get("dexId", ""),
             }
