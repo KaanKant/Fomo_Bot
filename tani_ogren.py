@@ -28,6 +28,9 @@ OLCUMLER = [
     ("holder", "Holder sayısı", [300, 800, 1500]),
     ("insider", "Insider/bundle payı (%)", [0.5, 2, 5]),
     ("dev", "Dev cüzdanı (%)", [0.1, 1, 2]),
+    ("mom", "Hacim ivmesi (1s x 24 / 24s)", [1, 3, 8]),
+    ("chg24", "24 saatlik fiyat değişimi (%)", [0, 50, 200]),
+    ("holder_saatlik", "Saatlik holder artışı", [20, 100, 400]),
 ]
 
 BASARI = 30      # "tuttu" sayılmak için zirvede gereken yüzde
@@ -138,6 +141,44 @@ def main():
         t = sum(1 for x in z if x >= BASARI)
         md.append(f"| {etiket} | {len(k)} | {statistics.median(z):+.0f}% | {t} ({t*100//len(k)}%) |")
     md.append("")
+
+    # DEX / launchpad kırılımı: hangi platformun tokenları koşuyor?
+    dexler = {}
+    for g in golge:
+        d = ((g.get("o") or {}).get("dex") or "?")
+        dexler.setdefault(d, []).append(g)
+    anlamli = {k: v for k, v in dexler.items() if len(v) >= 3}
+    if len(anlamli) > 1:
+        md += ["### Platforma (DEX) göre", "",
+               "| DEX | Kayıt | Medyan zirve | +%{} gören |".format(BASARI),
+               "|---|---|---|---|"]
+        for k, kl in sorted(anlamli.items(), key=lambda kv: -len(kv[1])):
+            z = [yuzde(g) for g in kl]
+            t = sum(1 for x in z if x >= BASARI)
+            md.append(f"| {k} | {len(kl)} | {statistics.median(z):+.0f}% | {t} ({t*100//len(kl)}%) |")
+        md += ["", "*3'ten az kaydı olan platformlar gösterilmiyor.*", ""]
+
+    # "Taban sonrası sıçrama" mı, "parabolik tepe" mi?
+    # Aynı hacim ivmesi, farklı fiyat bağlamı - hipotezi doğrudan test eder.
+    taban = [g for g in golge if (g.get("o") or {}).get("mom", 0) >= 3
+             and (g.get("o") or {}).get("chg24", 0) < 50]
+    tepe = [g for g in golge if (g.get("o") or {}).get("mom", 0) >= 3
+            and (g.get("o") or {}).get("chg24", 0) >= 100]
+    if taban or tepe:
+        md += ["### Hacim sıçraması: taban mı, tepe mi?", "",
+               "Aynı hacim ivmesi (>=3x), farklı fiyat bağlamı:", "",
+               "| Durum | Kayıt | Medyan zirve | Medyan şimdi | +%{} gören |".format(BASARI),
+               "|---|---|---|---|---|"]
+        for etiket, kl in (("İvme yüksek, fiyat henüz uçmamış (24s < %50)", taban),
+                           ("İvme yüksek, fiyat çoktan uçmuş (24s >= %100)", tepe)):
+            if not kl:
+                continue
+            z = [yuzde(g) for g in kl]
+            sm = [simdi(g) for g in kl]
+            t = sum(1 for x in z if x >= BASARI)
+            md.append(f"| {etiket} | {len(kl)} | {statistics.median(z):+.0f}% | "
+                      f"{statistics.median(sm):+.0f}% | {t} ({t*100//len(kl)}%) |")
+        md.append("")
 
     # En iyi kayıtlar: ortak yönleri var mı?
     sirali = sorted(golge, key=yuzde, reverse=True)
