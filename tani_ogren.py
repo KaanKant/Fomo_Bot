@@ -111,6 +111,22 @@ def main():
                       f"{statistics.median(s):+.0f}% | {t} ({t*100//len(k)}%) |")
         md.append("")
 
+    # Kaynağa göre kırılım: erken giriş mi, cüzdan takibi mi daha iyi?
+    kaynaklar = {}
+    for g in golge:
+        kaynaklar.setdefault(g.get("kaynak", "erken"), []).append(g)
+    if len(kaynaklar) > 1:
+        md += ["### Kaynağa göre", "",
+               "| Kaynak | Kayıt | Medyan zirve | Medyan şimdi | +%{} gören |".format(BASARI),
+               "|---|---|---|---|---|"]
+        for k, kl in sorted(kaynaklar.items(), key=lambda kv: -len(kv[1])):
+            z = [yuzde(g) for g in kl]
+            sm = [simdi(g) for g in kl]
+            t = sum(1 for x in z if x >= BASARI)
+            md.append(f"| {k} | {len(kl)} | {statistics.median(z):+.0f}% | "
+                      f"{statistics.median(sm):+.0f}% | {t} ({t*100//len(kl)}%) |")
+        md.append("")
+
     # launchpad / DEX kırılımı
     md += ["### Havuz tipi", "", "| Tip | Kayıt | Medyan zirve | +%{} gören |".format(BASARI),
            "|---|---|---|---|"]
