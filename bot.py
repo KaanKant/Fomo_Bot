@@ -1024,8 +1024,10 @@ def cuzdan_alimlari(adres, sol_usd, limit=100):
     if not key:
         log("HELIUS_API_KEY yok, cüzdan takibi atlanıyor")
         return []
+    # type=SWAP filtresi KULLANILMIYOR: OkxDex/DFlow gibi toplayıcılar üzerinden
+    # yapılan işlemleri Helius "SWAP" diye etiketlemiyor ve hepsi eleniyordu.
     data = get_json(HELIUS_ADDR.format(addr=adres),
-                    params={"api-key": key, "limit": limit, "type": "SWAP"}, timeout=30)
+                    params={"api-key": key, "limit": limit}, timeout=30)
     out = []
     for tx in data or []:
         ts = tx.get("timestamp") or 0
@@ -1071,7 +1073,7 @@ def run_cuzdan(cfg, state, dry_run=False):
             continue
         alimlar = cuzdan_alimlari(adres, sol_usd)
         alimlar.sort(key=lambda a: -a["ts"])
-        log(f"{ad}: {len(alimlar)} alım kaydı")
+        log(f"{ad}: {len(alimlar)} alım kaydı çıkarıldı")
         for a in alimlar:
             if kayit >= c.get("max_kayit_per_run", 3):
                 break
