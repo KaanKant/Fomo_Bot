@@ -1,54 +1,54 @@
 # Cüzdan bulucu
 
-Tarih: 2026-09-25 08:26 UTC
+Tarih: 2026-09-25 08:31 UTC
 
 Yöntem: her coinin zincir üstü sahip listesi çekilir, sonra kesiştirilir.
 
 | Coin | Mint | Sahip sayısı |
 |---|---|---|
-| FEELSGOOD | `HgcxVs6kJhPAaGqnPNGaa7zYgNT49hJrLufiqcNMuYZT` | 7741 |
-| AQUA | `AQVcP67EpMyu4cBZZjqMu91cVsWy1aX98JmcZm1FyY9` | 1727 |
+| JEANPHIL | `GTBxUiw6wJdmmkCGZgRHLyYxqu1vG4KtRpeox6yDpump` | 16599 |
+| SHARTCOIN | `UpBBfyC75u3kxDGWmmmW2yauk9YY3CqZhdt1KUDkids` | 2996 |
 
-## Hepsinde birden görünen cüzdan: **197**
+## Hepsinde birden görünen cüzdan: **320**
 
-| Cüzdan | FEELSGOOD | AQUA | Beklenene uyan |
+| Cüzdan | JEANPHIL | SHARTCOIN | Beklenene uyan |
 |---|---|---|---|
-| `Hpo766ufzaLce4FwvebarGDgFqMwnb2WKFkkUn7z3WLz` | 5,104,930 | 4,216,135 | 2/2 |
-| `2heJbC32Tpfcb3nbUb5ER61K11FGZVfVGtVnDm6LDogF` | 49 | 10,094,000 | 0/2 |
-| `58DKz1ogYsKFRH5ReKbMPDTTFqA46VRVgnZgvxijYwUi` | 3,400,370 | 3,571,901 | 0/2 |
-| `498g1rVnFcnjBjpfw1xyqA1WvgQXUU8RWuELjxkjAayQ` | 276 | 5,047,000 | 0/2 |
-| `3ZqnSJisaCptQN6csgmRCuHbgLHHkaFbJexB8cpYSPJF` | 1,132,824 | 2,802,320 | 0/2 |
-| `6rMzwTpKTJi3vi7nT4kNFC6em2VoFa1w6GoCPcYMafnU` | 17 | 2,286,877 | 0/2 |
-| `DnxH2ddm2D7FtAmtJHDpWfxLFNYB2ak2o47wnDMwm3WT` | 786,745 | 1,256,898 | 0/2 |
-| `CYuNkf84vXMwioWJSDaTPAHdUojb3DA4E267KWnFMirM` | 59 | 1,900,287 | 0/2 |
-| `4fSJmRxRF5uQctx4PWnahoqoF7VPtvp7FXvHqQM5v71c` | 332,188 | 864,071 | 0/2 |
-| `82x8HicoorarGot1GswAVMG9EQQ2sZ7Q8rPcwCL8oTRF` | 2,188 | 1,128,245 | 0/2 |
-| `Dw14m9NX2U8PKK1v6LJYJmy2KkjfUfxtTAWLSSonWHi6` | 37 | 1,061,592 | 0/2 |
-| `8RWZvXuZBraouZtPRbH6CUSKTUbwSmrwQJzRaS2mAiYB` | 211 | 1,002,376 | 0/2 |
-| `A7cKxGL1vG2icFbrSg7eQkvLkzuA7UCrBkPaWefFCt5X` | 811,658 | 66,103 | 0/2 |
-| `G21NcbDWNmL4mgMHJyAiEDwEvW6f8nk6fhpiYxbmxgN2` | 25 | 870,017 | 0/2 |
-| `4J3Wod8XpomZFEdWhcpyuXYexc1W8oBNQH81fLHDirEP` | 350,064 | 499,236 | 0/2 |
-| `C2Vn5KVoBm2zQ6v4n1nMYi1yXje8ZqW8KnF6QujaUFiy` | 628 | 720,016 | 0/2 |
-| `Cq7M6mi9SbzTy62c5SpWt9Ad81ycg9LfEHdBa8XeVugj` | 130 | 644,628 | 0/2 |
-| `EHYt3ogo74mSS3MT9ynu744zNMykMA4DMnEMd2UNK3y2` | 619,877 | 5,992 | 0/2 |
-| `28UMLxmfXt53aG9iD2B5wDnHnBWLhrkLP6J4D4muTbtY` | 123,602 | 480,476 | 0/2 |
-| `AEXyLvPe6Bz2vWwYhwdEPUnuyyJkSHzZtJtMMQ663Pgg` | 9,834 | 547,713 | 0/2 |
-| `8exLyoQDvyRN4T3LzoLUxUe1Yfgxwgpr1a829BjzK8Gr` | 494,282 | 62,226 | 0/2 |
-| `4CTvEe93dhb94r5R667zKgri3X4VEg6tNVeseybbgoUn` | 7 | 451,833 | 0/2 |
-| `6G9MBY7Uwk2SvVZsgSp8kdZc6Q24N71u5SdTWtNLm1NU` | 213,645 | 108,877 | 0/2 |
-| `BACUp7io44jNYYrrr6CuK3dGFoa921cE8FdTkzfQ862L` | 57,656 | 263,004 | 0/2 |
-| `DGDLs1itcne44VSbG3tdrHppzEvoEGfc2v2oDNTNYTGE` | 76,452 | 237,598 | 0/2 |
-| `CrJ7dDcq5Zz1c8Y8EfSBh8YKxn4rrk7kyHHZdRsrG7HE` | 311,602 | 241 | 0/2 |
-| `9Re7R9jQrDtkUoBoKJMLwfk8ZCcR5w4yZzaP1p4GVYnj` | 136,610 | 156,348 | 0/2 |
-| `6cbwhVqYR9mE1xTU73kKFwnEAFLuka9ewkFcVRZEnbH` | 84,468 | 202,868 | 0/2 |
-| `DLX4Z9GtNqmj7Eugre8h2VHiGbPbRfRx76qhrkMjwf3S` | 150,002 | 118,027 | 0/2 |
-| `8R2HzBQARVvKmha98y8RLbLqpz3QLpBgXyRcaDUaTwYu` | 24,469 | 226,255 | 0/2 |
+| `5sAQHDFzem7erKy5u3H6zTU8dbrYjfkEzhgn3dnek5qe` | 26,982,855 | 16,364,543 | 2/2 |
+| `GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL` | 2,233,064 | 201,240,167 | 0/2 |
+| `HRQfqHxmj126YSJKrEtYZuWXJmkUwWFXJ4DACpDHyCGG` | 1,510,182 | 521,579 | 0/2 |
+| `3yLef2t23xPwu179YDyiik19T4S2nmiwGfjpujVd71YP` | 183,545 | 1,477,163 | 0/2 |
+| `588xE2Gx8hcojVVTCumf78w8Piqv3Akq965udrrdD9yX` | 70 | 1,461,587 | 0/2 |
+| `BM9CcyErJcu2mjrFvUsRRrD3snGeHDDVirJLvL6EjvMN` | 618,043 | 792,055 | 0/2 |
+| `EWMS9z1Ke7bSf5F1VNFS1RrgQTvGefStdK5zE3PcjfSi` | 853,307 | 362,208 | 0/2 |
+| `Eh8rDX6DLQ6eTAro6DT3QHjCZx69EdG9uQ1YiWQpiFuX` | 1,008,229 | 23,358 | 0/2 |
+| `3G9jj6A6mxzgYbPcXxJGKa8kEqEr8Ejq1saVutPcBuew` | 0 | 1,000,433 | 0/2 |
+| `7F5W6ST7jTiimjmTmq2UPw3zZ3rs4M17uD3Ye1ZM6yiU` | 131,156 | 859,696 | 0/2 |
+| `A3fKayTMFN8SsRBKJQKZp9V4XC3UConaqdUv8YJgdZsM` | 311,118 | 476,119 | 0/2 |
+| `9oq9BpjKxGBomaiEURBXrTVr2rGFiQ8UZzGctPCCKGpW` | 331,431 | 427,857 | 0/2 |
+| `6BaSbuehR8SdwekYsEDcTWFpmvEiVpjcAevrGpB2diTc` | 82,110 | 642,657 | 0/2 |
+| `CZyoVvM8A7TS8v1cKyS4KzFJvmTc4xrisgMV419nkMVz` | 33,249 | 600,001 | 0/2 |
+| `81UqfFFmYtW8PSQQyMN7JFcjPtzPxLZ9jDixbqDfTLaj` | 2,538 | 432,993 | 0/2 |
+| `FF1GwKbUNc3YrXHQXkrCzct7xjBNCRcUd9aewdF5WmoC` | 285,092 | 99,813 | 0/2 |
+| `3KtFy9Gei4DjaEVkFANDnLrLrYjCEVp88Dez64ZiqHba` | 354,381 | 250 | 0/2 |
+| `GNab4ekyYKvax6SLAWDw6k6V6dLzvHLhUzjDJEGwBKgx` | 68,404 | 256,593 | 0/2 |
+| `81HHNStHsNMN8hrLbD2LFxzaikvzueZp4XWzvvmGePC1` | 26,809 | 294,523 | 0/2 |
+| `F2xeuZKVjm8s2kk34uVJQD3ZxurYtPTxqNoSa57v3rx6` | 137,916 | 163,803 | 0/2 |
+| `9Vzk81RKSZmS5DB9e22GwvRMSSKnptoJm6ArKododiL7` | 146,001 | 145,112 | 0/2 |
+| `PWFabm6bZJJP8BnemyaNfUU18r2KshV1ZsjqB3GQKwA` | 50,902 | 239,558 | 0/2 |
+| `AMubmo6Av17iQ1tdsWPe24tvqdreHakw8dJUeaVx85xD` | 193,947 | 95,679 | 0/2 |
+| `8jg1T7BGTZia7bBNhKqzjCQasEdvLKB2HMsXXrmazPKn` | 1,124 | 287,439 | 0/2 |
+| `DsbhbMXEQCfdrg7K6n7fA8VnvDWQfszYB3P1ikT7FXRD` | 151,361 | 100,000 | 0/2 |
+| `4rceeXY7ker6faWttRvtVMv3NJt1A8JKUyRzDkxfpA9R` | 141,666 | 101,082 | 0/2 |
+| `7UhjbynicBP8rqcobwsAJDfRMjwgHSgdxcYNJmLwxfms` | 137,742 | 94,769 | 0/2 |
+| `4kJW4MBu24jP5vtiT4ZN3GtNdiT6YVBWzmvw3GWLVqMH` | 130,065 | 99,677 | 0/2 |
+| `6yV7rCitQLLyTnwTakvecJW6ucnbjyDwXGVP2JeFMHUB` | 0 | 223,999 | 0/2 |
+| `9meFzaF8VW7yrHtjyvF2czu7WeZxncXeSGsa6FZUJDpg` | 17,235 | 202,771 | 0/2 |
 
 ## Beklenen miktarlar (FOMO'da görünen)
 
-- FEELSGOOD: 5,100,000
-- AQUA: 4,200,000
+- JEANPHIL: 26,900,000
+- SHARTCOIN: 16,300,000
 
 ## Sonuç
 
-Tek eşleşme: **`Hpo766ufzaLce4FwvebarGDgFqMwnb2WKFkkUn7z3WLz`** — bu cüzdan yüksek ihtimalle aradığımız kişi.
+Tek eşleşme: **`5sAQHDFzem7erKy5u3H6zTU8dbrYjfkEzhgn3dnek5qe`** — bu cüzdan yüksek ihtimalle aradığımız kişi.
