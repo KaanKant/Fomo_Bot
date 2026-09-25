@@ -39,6 +39,8 @@ DEX = "https://api.dexscreener.com"
 RUGCHECK = "https://api.rugcheck.xyz/v1/tokens/{mint}/report"
 GOPLUS = "https://api.gopluslabs.io/api/v1/token_security/{chain_id}"
 GECKO = "https://api.geckoterminal.com/api/v2"
+HELIUS_ADDR = "https://api.helius.xyz/v0/addresses/{addr}/transactions"
+WSOL = "So11111111111111111111111111111111111111112"
 GECKO_NETWORKS = {"solana": "solana", "bsc": "bsc", "base": "base", "ethereum": "eth"}
 # Havuzlarda karşı taraf olan (memecoin olmayan) tokenlar: wrapped native coinler ve stable'lar
 QUOTE_TOKENS = {a.lower() for a in (
@@ -946,7 +948,7 @@ def format_early(p, sec):
     )
 
 
-def golge_ekle(state, key, p, sec, now):
+def golge_ekle(state, key, p, sec, now, kaynak="erken"):
     """Filtreleri geçen adayı ölçümleriyle birlikte 'gölge' listesine yazar.
 
     Bildirim gönderilmiş olsa da olmasa da kaydedilir. Amaç ileride
@@ -958,7 +960,7 @@ def golge_ekle(state, key, p, sec, now):
     golge.append({
         "key": key, "chain": p["chain"], "addr": p["addr"], "symbol": p["name"],
         "ts": now, "price": p["price"], "peak_price": p["price"], "last_price": p["price"],
-        "hist": [[0, p["price"]]],
+        "hist": [[0, p["price"]]], "kaynak": kaynak,
         "o": {  # ölçümler (kısa adlar: state dosyası şişmesin)
             "yas": round(p["age_min"] or 0, 1),
             "mc": round(p["mc"]), "liq": round(p["liq"]),
@@ -1002,6 +1004,135 @@ def track_golge(cfg, state):
             if price > 0 and len(g["hist"]) < 80 and g["hist"][-1][0] != dk:
                 g["hist"].append([dk, price])
     log(f"{len(golge)} gölge kaydı güncellendi")
+
+
+# ------------------------------------------------------------------ cüzdan takibi
+def sol_fiyati():
+    """WSOL'un dolar fiyatı (alım büyüklüğünü dolara çevirmek için)."""
+    p = fetch_pairs("solana", ["So11111111111111111111111111111111111111112"]).get(
+        "So11111111111111111111111111111111111111112")
+    return fnum(p.get("priceUsd")) if p else 0.0
+
+
+def cuzdan_alimlari(adres, sol_usd, limit=100):
+    """Cüzdanın son swap'lerinden ALIM yaptığı tokenları çıkarır.
+
+    Sadece herkese açık zincir verisi (Helius). Dönen her kayıt:
+    {mint, ts, usd} - usd = o alımda harcanan yaklaşık dolar.
+    """
+    key = os.environ.get("HELIUS_API_KEY", "").strip()
+    if not key:
+        log("HELIUS_API_KEY yok, cüzdan takibi atlanıyor")
+        return []
+    data = get_json(HELIUS_ADDR.format(addr=adres),
+                    params={"api-key": key, "limit": limit, "type": "SWAP"}, timeout=30)
+    out = []
+    for tx in data or []:
+        ts = tx.get("timestamp") or 0
+        alinan, harcanan_usd = {}, 0.0
+        for t in tx.get("tokenTransfers") or []:
+            mint = (t.get("mint") or "")
+            amt = fnum(t.get("tokenAmount"))
+            if t.get("toUserAccount") == adres and mint and mint.lower() not in QUOTE_TOKENS:
+                alinan[mint] = alinan.get(mint, 0.0) + amt
+            if t.get("fromUserAccount") == adres and mint.lower() in QUOTE_TOKENS:
+                # WSOL SOL fiyatıyla, stable'lar 1:1
+                carpan = sol_usd if mint.lower() == WSOL.lower() else 1.0
+                harcanan_usd += amt * carpan
+        for n in tx.get("nativeTransfers") or []:
+            if n.get("fromUserAccount") == adres:
+                harcanan_usd += fnum(n.get("amount")) / 1e9 * sol_usd
+        for mint, amt in alinan.items():
+            if amt > 0:
+                out.append({"mint": mint, "ts": ts, "usd": round(harcanan_usd, 2)})
+    return out
+
+
+def run_cuzdan(cfg, state, dry_run=False):
+    """Takip edilen cüzdanların yeni alımlarını gölge kaydı olarak yazar."""
+    c = cfg.get("cuzdan_takip") or {}
+    if not c.get("aktif"):
+        return 0
+    now = time.time()
+    cooldown = c.get("cooldown_hours", 24) * 3600
+    seen = state.setdefault("seen_cuzdan", {})
+    state["seen_cuzdan"] = {k: t for k, t in seen.items() if now - t < cooldown}
+    seen = state["seen_cuzdan"]
+
+    sol_usd = sol_fiyati()
+    if not sol_usd:
+        log("SOL fiyatı alınamadı, cüzdan takibi atlanıyor")
+        return 0
+
+    reasons, kayit, bildirim = {}, 0, 0
+    for w in c.get("cuzdanlar", []):
+        ad, adres = w.get("ad", "?"), w.get("adres", "")
+        if not adres:
+            continue
+        alimlar = cuzdan_alimlari(adres, sol_usd)
+        alimlar.sort(key=lambda a: -a["ts"])
+        log(f"{ad}: {len(alimlar)} alım kaydı")
+        for a in alimlar:
+            if kayit >= c.get("max_kayit_per_run", 3):
+                break
+            if now - a["ts"] > c.get("lookback_hours", 6) * 3600:
+                continue
+            key = f"cuzdan:{ad}:{a['mint']}"
+            if key in seen:
+                continue
+            if a["usd"] < c.get("min_usd", 200):
+                reasons["alım küçük"] = reasons.get("alım küçük", 0) + 1
+                seen[key] = now
+                continue
+            pair = fetch_pairs("solana", [a["mint"]]).get(a["mint"])
+            if not pair:
+                reasons["çift bulunamadı"] = reasons.get("çift bulunamadı", 0) + 1
+                continue
+            mc = fnum(pair.get("marketCap"))
+            if mc and mc > c.get("mc_max", 5_000_000):
+                reasons["MC çok büyük"] = reasons.get("MC çok büyük", 0) + 1
+                seen[key] = now
+                continue
+            sec = insider_check(a["mint"]) or {}
+            yas_dk = (now - fnum((pair.get("pairCreatedAt") or 0)) / 1000) / 60
+            p = {
+                "chain": "solana", "addr": a["mint"],
+                "name": (pair.get("baseToken") or {}).get("symbol") or "?",
+                "price": fnum(pair.get("priceUsd")), "mc": mc,
+                "liq": fnum((pair.get("liquidity") or {}).get("usd")),
+                "vol1": fnum((pair.get("volume") or {}).get("h1")),
+                "chg5": 0.0, "chg1h": fnum((pair.get("priceChange") or {}).get("h1")),
+                "buyers15": 0, "sellers15": 0, "buys15": 0, "sells15": 0, "buyers5": 0,
+                "age_min": max(yas_dk, 0), "pool": pair.get("pairAddress"), "dex": pair.get("dexId", ""),
+            }
+            if golge_ekle(state, key, p, sec, now, kaynak=f"cüzdan:{ad}"):
+                kayit += 1
+                state["golge"][-1]["o"]["alim_usd"] = a["usd"]
+            seen[key] = now
+            if not c.get("sadece_veri"):
+                if send_telegram(format_cuzdan(ad, p, sec, a["usd"]), dry_run):
+                    bildirim += 1
+            time.sleep(0.4)
+
+    track_golge(cfg, state)
+    log(f"Cüzdan takibi: {kayit} yeni kayıt, {bildirim} bildirim")
+    if reasons:
+        log("Elenme sebepleri:", json.dumps(reasons, ensure_ascii=False))
+    return kayit
+
+
+def format_cuzdan(ad, p, sec, usd):
+    return (
+        f"<b>TAKİP: {html.escape(ad)} aldı - {html.escape(p['name'])}</b> (Solana)\n"
+        f"<i>Alım büyüklüğü: ${usd:,.0f} | coin {age_text(p['age_min']/60)} yaşında</i>\n\n"
+        f"MC: {money(p['mc'])} | Likidite: {money(p['liq'])}\n"
+        f"1s hacim: {money(p['vol1'])} | 1s: {p['chg1h']:+.0f}%\n"
+        f"Holder: {sec.get('holders', '?')} | Insider/bundle: %{sec.get('insider_pct', 0):.1f}\n\n"
+        f"<code>{p['addr']}</code>\n"
+        f"{links('solana', p['addr'], '')}\n\n"
+        f"<i>Bu kişinin işlem geçmişi kazanç garantisi değildir. "
+        f"Yatırım tavsiyesi değildir.</i>"
+    )
 
 
 def run_early(cfg, state, dry_run=False):
@@ -1134,7 +1265,7 @@ def run_early(cfg, state, dry_run=False):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", default="scan",
-                    choices=["scan", "report", "test", "erken"])
+                    choices=["scan", "report", "test", "erken", "cuzdan"])
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
@@ -1145,10 +1276,18 @@ def main():
 
     state = load_state()
     try:
-        if args.mode == "erken":
+        if args.mode == "cuzdan":
+            run_cuzdan(cfg, state, args.dry_run)
+        elif args.mode == "erken":
             run_early(cfg, state, args.dry_run)
         elif args.mode == "scan":
             run_scan(cfg, state, args.dry_run)
+            # takip edilen cüzdanların alımları (zincir üstü, herkese açık veri)
+            if (cfg.get("cuzdan_takip") or {}).get("aktif"):
+                try:
+                    run_cuzdan(cfg, state, args.dry_run)
+                except Exception as e:
+                    log("Cüzdan takibi hata verdi:", e)
             # erken giriş kategorisi aynı taramada çalışır (ayrı cron gerekmez)
             if (cfg.get("erken") or {}).get("aktif"):
                 try:
