@@ -86,3 +86,19 @@ erken:
   max_alerts_per_run: 1       # taramada en fazla 1 erken giriş bildirimi
   max_alerts_per_day: 10      # günde en fazla 10 erken giriş bildirimi (spam kalkanı)
   cooldown_hours: 12          # aynı coin 12 saat içinde tekrar bildirilmez
+
+# --- CÜZDAN TAKİBİ (zincir üstü, herkese açık veri) -----------
+# FOMO'da öne çıkan trader'ların cüzdan adresleri. Bot bu cüzdanların
+# ALIMLARINI görür ve gölge kaydı açar. Amaç: "bu kişiyi takip etmek
+# gerçekten işe yarıyor mu" sorusunu birkaç hafta sonra veriyle yanıtlamak.
+cuzdan_takip:
+  aktif: true
+  sadece_veri: true           # true = bildirim yok, sadece kayıt. Bildirim için: false
+  cuzdanlar:
+    - ad: CryptoKemal
+      adres: Hpo766ufzaLce4FwvebarGDgFqMwnb2WKFkkUn7z3WLz
+  lookback_hours: 6           # son kaç saatlik alımlara bakılsın
+  min_usd: 200                # bu tutarın altındaki alımlar ciddiye alınmaz
+  mc_max: 5000000             # $5M üstü coinleri atla (bizim ilgi alanımız değil)
+  max_kayit_per_run: 3        # taramada en fazla 3 yeni kayıt
+  cooldown_hours: 24          # aynı coin 24 saat içinde tekrar kaydedilmez
