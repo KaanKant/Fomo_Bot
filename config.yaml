@@ -97,6 +97,8 @@ cuzdan_takip:
   cuzdanlar:
     - ad: CryptoKemal
       adres: Hpo766ufzaLce4FwvebarGDgFqMwnb2WKFkkUn7z3WLz
+    - ad: artthatfucks
+      adres: 5sAQHDFzem7erKy5u3H6zTU8dbrYjfkEzhgn3dnek5qe
   lookback_hours: 6           # son kaç saatlik alımlara bakılsın
   min_usd: 200                # bu tutarın altındaki alımlar ciddiye alınmaz
   mc_max: 5000000             # $5M üstü coinleri atla (bizim ilgi alanımız değil)
