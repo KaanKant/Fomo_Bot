@@ -75,14 +75,33 @@ def grupla(kayitlar, anahtar, esikler):
     return etiketler, gruplar
 
 
+def bozuk_mu(g):
+    """Bozuk fiyat okumasıyla kaydedilmiş kayıt mı?
+
+    İmza: likidite market cap'ten büyük, ya da inanılmaz bir yüzde.
+    Bunlar analizi zehirliyor, dışarıda bırakılıyorlar.
+    """
+    o = g.get("o") or {}
+    if bot.fnum(o.get("likmc")) > 1:
+        return True
+    return yuzde(g) > 100000
+
+
 def main():
     state = bot.load_state()
-    golge = state.get("golge", [])
+    ham = state.get("golge", [])
+    bozuk = [g for g in ham if bozuk_mu(g)]
+    golge = [g for g in ham if not bozuk_mu(g)]
     now = datetime.now(timezone.utc)
 
     md = ["# Öğrenme raporu", "",
           f"Tarih: {now.strftime('%Y-%m-%d %H:%M')} UTC",
           f"Kayıt sayısı: **{len(golge)}**", ""]
+    if bozuk:
+        md += [f"> **{len(bozuk)} kayıt bozuk fiyat okuması yüzünden dışlandı** "
+               "(likidite market cap'ten büyük ya da inanılmaz yüzde). "
+               "Bunlar çok yeni coinlerde GeckoTerminal'in hatalı fiyat vermesinden "
+               "kaynaklanıyor; koda bunları baştan kaydetmeyen bir kontrol eklendi.", ""]
 
     if len(golge) < 10:
         md += ["Anlamlı bir sonuç için en az 10-20 kayıt gerekiyor. "
