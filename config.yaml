@@ -65,10 +65,15 @@ erken:
   new_pool_pages: 10          # GeckoTerminal "yeni havuz" listesinde kaç sayfa geriye gidilsin (en fazla 10)
   age_min_minutes: 2          # 2 dakikadan genç coinlere bakma (veri oturmamış)
   age_max_hours: 12           # 12 saatten yaşlıysa bu kategori değil
-  mc_min: 30000               # $30K
+  # Aşağıdaki üç eşik 293 gölge kaydının ölçümünden çıktı (2026-09-27):
+  #   likidite/MC 0.10-0.20 arası olanların %62'si +%30 gördü (altındakiler çok kötü)
+  #   MC $300K üstü olanların %59'u, holder 1.500+ olanların %56'sı +%30 gördü
+  # Tahmin değil, kendi verimiz. Havuz küçülecek ama isabet artması bekleniyor.
+  mc_min: 300000              # $300K
   mc_max: 2000000             # $2M
   liq_min: 12000              # en az $12K likidite
-  liq_to_mc_min: 0.05         # likidite / MC en az %5
+  liq_to_mc_min: 0.10         # likidite / MC en az %10
+  holders_min: 1000           # en az 1000 holder (veri yoksa aday elenir)
   vol_h1_min: 20000           # 1 saatlik coinden beklenen hacim (gençlerde orantılı düşer)
   vol_young_min: 5000         # çok genç coinler için en düşük hacim tabanı
   buyers15_min: 150           # son 15 dakikada en az 150 FARKLI alıcı
@@ -93,14 +98,20 @@ erken:
 # gerçekten işe yarıyor mu" sorusunu birkaç hafta sonra veriyle yanıtlamak.
 cuzdan_takip:
   aktif: true
-  sadece_veri: true           # true = bildirim yok, sadece kayıt. Bildirim için: false
+  sadece_veri: true           # cüzdanda "bildir" yazılmamışsa geçerli varsayılan
+  # Cüzdan bazında bildirim: "bildir: true" olan cüzdanın alımı Telegram'a düşer,
+  # yazılmayan cüzdan sadece ölçümde kalır.
   cuzdanlar:
     - ad: CryptoKemal
       adres: Hpo766ufzaLce4FwvebarGDgFqMwnb2WKFkkUn7z3WLz
+      bildir: true            # 5 kayıtta medyan +43% - az örnek, o yüzden ölçüm devam ediyor
     - ad: artthatfucks
       adres: 5sAQHDFzem7erKy5u3H6zTU8dbrYjfkEzhgn3dnek5qe
+      # bildir yok: sonuçları bizim taramamızdan iyi değil (%36 vs %39), sadece ölçülüyor
   lookback_hours: 12          # son kaç saatlik alımlara bakılsın (seyrek işlem yapanı kaçırmamak için)
   min_usd: 200                # bu tutarın altındaki alımlar ciddiye alınmaz
   mc_max: 5000000             # $5M üstü coinleri atla (bizim ilgi alanımız değil)
   max_kayit_per_run: 3        # taramada en fazla 3 yeni kayıt
+  max_bildirim_per_run: 3     # taramada en fazla 3 cüzdan bildirimi
+  bildirim_max_yas_dk: 45     # 45 dakikadan eski alımlar bildirilmez (geç kalmış olur)
   cooldown_hours: 24          # aynı coin 24 saat içinde tekrar kaydedilmez
