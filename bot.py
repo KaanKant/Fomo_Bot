@@ -959,6 +959,14 @@ def golge_ekle(state, key, p, sec, now, kaynak="erken"):
     golge = state.setdefault("golge", [])
     if any(g["key"] == key for g in golge):
         return False
+    # Veri kalitesi kalkanı: çok yeni coinlerde GeckoTerminal bazen fiyatı ya da
+    # market cap'i sıfıra yakın veriyor. Böyle bir kayıt sonradan "%25 milyon kâr"
+    # gibi saçma sonuçlar üretip tüm analizi bozuyor. Likiditenin market cap'ten
+    # büyük olması bu bozuk okumanın imzası.
+    if not fnum(p.get("price")) or not fnum(p.get("mc")):
+        return False
+    if fnum(p["liq"]) > fnum(p["mc"]):
+        return False
     golge.append({
         "key": key, "chain": p["chain"], "addr": p["addr"], "symbol": p["name"],
         "ts": now, "price": p["price"], "peak_price": p["price"], "last_price": p["price"],
