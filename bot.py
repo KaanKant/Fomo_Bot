@@ -1106,6 +1106,12 @@ def run_cuzdan(cfg, state, dry_run=False):
         ad, adres = w.get("ad", "?"), w.get("adres", "")
         if not adres:
             continue
+        # Bildirim kararı cüzdan bazında: bir cüzdan bildirim gönderirken
+        # diğeri sadece ölçümde kalabilir. Cüzdanda "bildir" yazılmamışsa
+        # genel sadece_veri ayarı geçerli.
+        bildir = w.get("bildir")
+        if bildir is None:
+            bildir = not c.get("sadece_veri")
         alimlar = cuzdan_alimlari(adres, sol_usd)
         alimlar.sort(key=lambda a: -a["ts"])
         log(f"{ad}: {len(alimlar)} alım kaydı çıkarıldı")
@@ -1148,7 +1154,13 @@ def run_cuzdan(cfg, state, dry_run=False):
                 kayit += 1
                 state["golge"][-1]["o"]["alim_usd"] = a["usd"]
             seen[key] = now
-            if not c.get("sadece_veri"):
+            # Bildirim sadece TAZE alımlar için. lookback penceresi 12 saat ama
+            # 11 saat önceki bir alımı haber vermek işe yaramaz, geç kalmış olur.
+            alim_yas_dk = (now - a["ts"]) / 60
+            if bildir and alim_yas_dk > c.get("bildirim_max_yas_dk", 45):
+                gec = "alım bildirim için eski"
+                reasons[gec] = reasons.get(gec, 0) + 1
+            elif bildir and bildirim < c.get("max_bildirim_per_run", 3):
                 if send_telegram(format_cuzdan(ad, p, sec, a["usd"]), dry_run):
                     bildirim += 1
             time.sleep(0.4)
@@ -1261,6 +1273,15 @@ def run_early(cfg, state, dry_run=False):
             bad = f"insider/bundle payı yüksek (%{sec['insider_pct']:.0f})"
         elif sec["creator_pct"] > e.get("creator_max_pct", 5):
             bad = f"dev cüzdanı büyük (%{sec['creator_pct']:.0f})"
+        # Holder sayısı: ölçümlerde 1.500+ holder'lı kayıtların %56'sı +%30 gördü,
+        # 500'ün altındakiler belirgin şekilde kötüydü. Veri yoksa şüpheden
+        # yararlandırma yok (LP kilidinde olduğu gibi).
+        elif e.get("holders_min"):
+            h = sec.get("holders")
+            if h is None:
+                bad = "holder verisi yok"
+            elif h < e["holders_min"]:
+                bad = f"holder az ({h})"
         if bad:
             reasons[bad] = reasons.get(bad, 0) + 1
             seen[key] = now
