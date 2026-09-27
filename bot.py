@@ -915,6 +915,10 @@ def early_filter(p, e):
         return "likidite düşük"
     if p["mc"] and p["liq"] / p["mc"] < e["liq_to_mc_min"]:
         return "likidite/MC düşük"
+    # Üst sınır: likidite MC'nin %25'inden büyükse coin henüz bonding curve'ün
+    # başında demektir. Ölçümde bu grup (0.2+) belirgin şekilde kötü çıktı.
+    if p["mc"] and e.get("liq_to_mc_max") and p["liq"] / p["mc"] > e["liq_to_mc_max"]:
+        return "likidite/MC çok yüksek (çok erken)"
     # Hacim eşiği yaşa göre ölçeklenir: 5 dakikalık coinden 1 saatlik hacim beklenemez
     gerekli_hacim = max(e.get("vol_young_min", 5000),
                         e["vol_h1_min"] * min(1.0, p["age_min"] / 60))
