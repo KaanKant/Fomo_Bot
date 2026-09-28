@@ -31,6 +31,8 @@ OLCUMLER = [
     ("mom", "Hacim ivmesi (1s x 24 / 24s)", [1, 3, 8]),
     ("chg24", "24 saatlik fiyat değişimi (%)", [0, 50, 200]),
     ("holder_saatlik", "Saatlik holder artışı", [20, 100, 400]),
+    ("dev_token", "Kurucunun eski token sayısı", [0.5, 5, 20]),
+    ("dev_olu", "Kurucunun ölmüş eski tokenları", [0.5, 5, 20]),
 ]
 
 BASARI = 30      # "tuttu" sayılmak için zirvede gereken yüzde
