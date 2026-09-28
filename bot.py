@@ -41,6 +41,8 @@ GOPLUS = "https://api.gopluslabs.io/api/v1/token_security/{chain_id}"
 GECKO = "https://api.geckoterminal.com/api/v2"
 HELIUS_ADDR = "https://api.helius.xyz/v0/addresses/{addr}/transactions"
 WSOL = "So11111111111111111111111111111111111111112"
+# Kurucunun eski bir tokenı bu MC'nin altındaysa "ölmüş" sayılır
+DEV_OLU_MC = 10_000
 GECKO_NETWORKS = {"solana": "solana", "bsc": "bsc", "base": "base", "ethereum": "eth"}
 # Havuzlarda karşı taraf olan (memecoin olmayan) tokenlar: wrapped native coinler ve stable'lar
 QUOTE_TOKENS = {a.lower() for a in (
@@ -892,6 +894,14 @@ def insider_check(mint):
         creator_pct = fnum(rep.get("creatorBalance")) / supply * 100
     risks = [r.get("name", "?") for r in (rep.get("risks") or [])
              if str(r.get("level", "")).lower() == "danger"]
+    # Deployer geçmişi: kurucunun daha önce çıkardığı tokenlar.
+    # RugCheck bu alanı {mint, marketCap, createdAt} listesi olarak veriyor;
+    # kurucunun geçmişi yoksa alan null geliyor. "Ölmüş" = bugünkü MC $10K altı.
+    ct = rep.get("creatorTokens")
+    dev_token_n = len(ct) if isinstance(ct, list) else 0
+    dev_olu_n = sum(1 for t in ct
+                    if isinstance(t, dict) and fnum(t.get("marketCap")) < DEV_OLU_MC) \
+        if isinstance(ct, list) else 0
     return {
         "mint_ok": not token.get("mintAuthority") and not token.get("freezeAuthority"),
         "rugged": bool(rep.get("rugged")),
@@ -900,6 +910,9 @@ def insider_check(mint):
         "lp_locked": lp_locked,
         "creator_pct": round(creator_pct, 2),
         "holders": rep.get("totalHolders"),
+        "dev_token_n": dev_token_n,
+        "dev_olu_n": dev_olu_n,
+        "dev_gecmis_var": isinstance(ct, list),
         "danger": risks,
         "score": rep.get("score_normalised", rep.get("score")),
     }
@@ -991,6 +1004,9 @@ def golge_ekle(state, key, p, sec, now, kaynak="erken"):
             "dex": p.get("dex", ""), "lp": sec.get("lp_locked"),
             "insider": sec.get("insider_pct"), "dev": sec.get("creator_pct"),
             "holder": sec.get("holders"), "launchpad": bool(sec.get("launchpad")),
+            # Deployer geçmişi - şu an SADECE ölçülüyor, hiçbir adayı elemiyor
+            "dev_token": sec.get("dev_token_n", 0),
+            "dev_olu": sec.get("dev_olu_n", 0),
         },
     })
     return True
