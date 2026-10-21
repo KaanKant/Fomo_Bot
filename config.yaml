@@ -56,6 +56,39 @@ report_lookback_days: 7       # günlük raporda son 7 günün sinyalleri
 report_hour: 9                # rapor saati (Türkiye). Bu saatten sonraki ilk taramada gönderilir
 track_days: 14                # sinyaller bu kadar gün fiyat takibinde kalır (zirve ölçümü)
 
+# --- BİLDİRİMLER (sadeleştirme) -----------------------------
+# Tek tek sinyal mesajları kapalıyken de bot taramaya, kayıt tutmaya ve
+# sanal işleme devam eder. Günlük rapor her durumda gönderilir.
+bildirimler:
+  sinyaller: false            # tarama ve cüzdan sinyal mesajları (true = eskisi gibi her sinyal gelir)
+  sanal_islem: kapanis        # hepsi = alım + satış | kapanis = sadece satış | yok = sadece günlük rapor
+
+# --- SANAL İŞLEM (paper trading) ----------------------------
+# Sinyalleri gerçek para kullanmadan, sanal bakiyeyle alıp satar.
+# Canlı alım satıma geçmeden önce kuralları burada deniyoruz.
+sanal_islem:
+  aktif: true
+  baslangic_bakiye: 200       # sanal başlangıç bakiyesi ($)
+  islem_tutari: 20            # her alım $20
+  max_acik_pozisyon: 5        # aynı anda en fazla 5 açık pozisyon
+  gunluk_max_islem: 10        # günde en fazla 10 yeni alım
+  gunluk_zarar_limiti: 60     # gün içinde net zarar $60'ı geçerse o gün yeni alım yok
+  tekrar_giris_saat: 24       # aynı coine 24 saat içinde tekrar girme
+  min_likidite: 10000         # likiditesi bunun altındaki coine girme (kayma çok yüksek olur)
+  kaynaklar:                  # hangi sinyaller sanal alım tetiklesin
+    tarama: true              # ana tarama sinyalleri
+    cuzdan: true              # takip edilen cüzdanların taze alımları
+    erken: true               # erken giriş kategorisi (bildirim kapalı olsa da)
+  # Çıkış kuralları. Başlangıç değerleri 25 Eylül çıkış backtest'inin en iyi
+  # kuralı (yine de ortalama -%40 çıkmıştı, bu yüzden önce sanal).
+  kar_al_pct: 150             # fiyat girişin +%150'sine çıkınca sat
+  zarar_kes_pct: -50          # fiyat girişin -%50'sine düşünce sat
+  max_sure_dk: 60             # 60 dakika sonra ne olursa olsun sat
+  # Maliyet modeli (her yön için)
+  ucret_pct: 1.0              # DEX + aggregator + priority fee toplamı
+  slippage_taban_pct: 1.0     # sabit kayma; üstüne havuz derinliğine göre fiyat etkisi eklenir
+  rug_likidite_min: 1000      # likidite bunun altına düşerse satılamaz, pozisyon sıfır sayılır
+
 # --- ERKEN GİRİŞ kategorisi (yüksek risk) --------------------
 # Yeni doğmuş coinlerde "organik erken ilgi" arar: kısa sürede çok sayıda
 # FARKLI alıcı + temiz kontrat + küçük insider/bundle payı.

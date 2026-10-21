@@ -7,6 +7,7 @@ low-cap coinleri tarar, filtrelerden geçenleri Telegram'a bildirir.
 
 Bu bot ALIM SATIM YAPMAZ. Cüzdana, private key'e ya da paraya erişimi yoktur.
 Sadece bildirim gönderir; karar ve işlem tamamen kullanıcıdadır.
+Sanal işlem modu (paper.py) sinyalleri sanal bakiyeyle alıp satarak kuralları dener.
 
 Modlar:
   --mode scan    : tarama yap, uygun coinleri bildir (varsayılan)
@@ -30,6 +31,8 @@ from pathlib import Path
 
 import requests
 import yaml
+
+import paper
 
 ROOT = Path(__file__).resolve().parent
 STATE_PATH = ROOT / "state" / "state.json"
@@ -112,6 +115,22 @@ def age_text(hours):
     if hours < 48:
         return f"{hours:.0f} saat"
     return f"{hours/24:.0f} gün"
+
+
+def sinyal_bildir(cfg):
+    """Tek tek sinyal mesajları açık mı? Kapalıysa sinyaller yine kaydedilir ve
+    sanal işleme girer, sadece Telegram'a mesaj gitmez."""
+    return bool((cfg.get("bildirimler") or {}).get("sinyaller", True))
+
+
+def paper_ac(cfg, state, key, chain, addr, symbol, price, liq, mc, kaynak, dry_run=False):
+    try:
+        return paper.ac(cfg, state, key=key, chain=chain, addr=addr, symbol=symbol,
+                        price=fnum(price), liq=fnum(liq), mc=fnum(mc), kaynak=kaynak,
+                        notify=lambda t: send_telegram(t, dry_run), log=log)
+    except Exception as e:   # sanal işlem hatası taramayı düşürmesin
+        log("Sanal alım hata verdi:", e)
+        return None
 
 
 def load_config():
@@ -638,8 +657,12 @@ def run_scan(cfg, state, dry_run=False):
         if not ok:
             watched += 1
             continue
-        if send_telegram(format_signal(chain, addr, m, sec, score, pros), dry_run):
+        bildirildi = (send_telegram(format_signal(chain, addr, m, sec, score, pros), dry_run)
+                      if sinyal_bildir(cfg) else True)
+        if bildirildi:
             sent += 1
+            paper_ac(cfg, state, key, chain, addr, m["symbol"], m["price"], m["liq"], m["mc"],
+                     "tarama", dry_run)
             state["seen"][key] = now
             state["signals"].append({
                 "key": key, "chain": chain, "addr": addr, "symbol": m["symbol"],
@@ -721,7 +744,8 @@ def run_report(cfg, state, dry_run=False):
     if not sigs:
         text = "\n".join([f"<b>Günlük rapor</b>",
                           f"Son {cfg['report_lookback_days']} günde sinyal yok."]
-                         + stats_summary(state, now))
+                         + stats_summary(state, now)
+                         + paper.rapor_satirlari(cfg, state, now))
         ok = send_telegram(text, dry_run)
         log(f"Rapor {'gönderildi' if ok else 'GÖNDERİLEMEDİ'} (kayıtlı sinyal yok)")
         return ok
@@ -789,6 +813,7 @@ def run_report(cfg, state, dry_run=False):
                  f"(yatırılan {invested}$, ücretler hariç)")
     lines += stats_summary(state, now)
     lines += golge_ozeti(state)
+    lines += paper.rapor_satirlari(cfg, state, now)
     lines.append("\n<i>Zirve = sinyalden sonra görülen en yüksek fiyat (taramalar arasında "
                  "ölçüldüğü için yaklaşıktır). Fiyatı bulunamayan coinler -%100 sayılır.</i>")
 
@@ -1132,6 +1157,7 @@ def run_cuzdan(cfg, state, dry_run=False):
         bildir = w.get("bildir")
         if bildir is None:
             bildir = not c.get("sadece_veri")
+        bildir = bildir and sinyal_bildir(cfg)
         alimlar = cuzdan_alimlari(adres, sol_usd)
         alimlar.sort(key=lambda a: -a["ts"])
         log(f"{ad}: {len(alimlar)} alım kaydı çıkarıldı")
@@ -1177,6 +1203,11 @@ def run_cuzdan(cfg, state, dry_run=False):
             # Bildirim sadece TAZE alımlar için. lookback penceresi 12 saat ama
             # 11 saat önceki bir alımı haber vermek işe yaramaz, geç kalmış olur.
             alim_yas_dk = (now - a["ts"]) / 60
+            # Sanal işlem de sadece taze alımlara girer: saatler önceki alımı
+            # kopyalamak gerçek hayatta mümkün değil.
+            if alim_yas_dk <= c.get("bildirim_max_yas_dk", 45):
+                paper_ac(cfg, state, key, "solana", a["mint"], p["name"], p["price"],
+                         p["liq"], p["mc"], f"cüzdan:{ad}", dry_run)
             if bildir and alim_yas_dk > c.get("bildirim_max_yas_dk", 45):
                 gec = "alım bildirim için eski"
                 reasons[gec] = reasons.get(gec, 0) + 1
@@ -1312,6 +1343,9 @@ def run_early(cfg, state, dry_run=False):
         # kaydet. Bu kayıtlar hangi ölçümün gerçekten yükselişi öngördüğünü
         # sonradan veriyle bulmamızı sağlıyor.
         yeni_kayit = golge_ekle(state, key, p, sec, now)
+        if yeni_kayit:
+            paper_ac(cfg, state, key, p["chain"], p["addr"], p["name"], p["price"],
+                     p["liq"], p["mc"], "erken", dry_run)
 
         if veri_modu:
             reasons["sadece veri modu (bildirim kapalı)"] = \
@@ -1361,6 +1395,12 @@ def main():
         elif args.mode == "erken":
             run_early(cfg, state, args.dry_run)
         elif args.mode == "scan":
+            # Önce açık sanal pozisyonlar: kapananlar yeni alımlara yer açsın
+            try:
+                paper.tick(cfg, state, fetch_pairs,
+                           notify=lambda t: send_telegram(t, args.dry_run), log=log)
+            except Exception as e:
+                log("Sanal işlem takibi hata verdi:", e)
             run_scan(cfg, state, args.dry_run)
             # takip edilen cüzdanların alımları (zincir üstü, herkese açık veri)
             if (cfg.get("cuzdan_takip") or {}).get("aktif"):

@@ -21,6 +21,20 @@ Her 10 dakikada bir DexScreener ve GeckoTerminal'daki yeni ve trend coinleri tar
 
 Tüm eşikler `config.yaml` içinde, istediğin gibi değiştirebilirsin.
 
+## Sanal işlem (paper trading)
+
+Canlı alım satıma geçmeden önce kuralları denemek için bot, sinyalleri **sanal bakiyeyle** alıp satar. Gerçek para ve cüzdan kullanılmaz.
+
+- **Giriş:** Ana tarama sinyalleri, takip edilen cüzdanların taze (45 dakikadan yeni) alımları ve erken giriş kayıtları sanal $20'lık alım açar. Hangi kaynakların alım açacağı `config.yaml` içinde seçilir.
+- **Çıkış:** Her taramada kâr al (+%150), zarar kes (-%50) ve süre limiti (60 dk) kontrol edilir. Likidite çekilirse ya da coin listeden düşerse pozisyon satılamamış sayılır ve -%100 yazılır.
+- **Maliyet:** Her yönde %1 ücret, %1 sabit kayma ve havuz derinliğine göre fiyat etkisi düşülür.
+- **Limitler:** Aynı anda en fazla 5 pozisyon, günde en fazla 10 alım. Günlük net zarar $60'ı geçerse o gün yeni alım açılmaz. Canlı bot da aynı limitlerle çalışacak.
+- **Rapor:** Günlük raporda sanal bakiye, kazanma oranı, kaynağa ve kapanış sebebine göre sonuçlar yer alır.
+
+Fiyatlar sadece tarama anında okunur. Eşik iki tarama arasında geçildiyse satış, o an görülen fiyattan yapılır.
+
+**Bildirimler:** `bildirimler.sinyaller: false` iken tek tek sinyal mesajları gelmez, ama bot kayıt tutmaya ve sanal işleme devam eder. `bildirimler.sanal_islem` ile sanal işlem mesajları ayarlanır: `hepsi`, `kapanis` (varsayılan, sadece satışlar) ya da `yok`.
+
 ---
 
 ## Kurulum (yaklaşık 15 dakika)
