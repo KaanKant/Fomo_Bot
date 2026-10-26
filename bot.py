@@ -1205,7 +1205,8 @@ def run_cuzdan(cfg, state, dry_run=False):
             alim_yas_dk = (now - a["ts"]) / 60
             # Sanal işlem de sadece taze alımlara girer: saatler önceki alımı
             # kopyalamak gerçek hayatta mümkün değil.
-            if alim_yas_dk <= c.get("bildirim_max_yas_dk", 45):
+            # Sanal işlem cüzdan bazında: "sanal: true" yazan cüzdan alım açar.
+            if w.get("sanal") and alim_yas_dk <= c.get("bildirim_max_yas_dk", 45):
                 paper_ac(cfg, state, key, "solana", a["mint"], p["name"], p["price"],
                          p["liq"], p["mc"], f"cüzdan:{ad}", dry_run)
             if bildir and alim_yas_dk > c.get("bildirim_max_yas_dk", 45):

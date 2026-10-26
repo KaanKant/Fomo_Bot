@@ -68,6 +68,9 @@ bildirimler:
 # Canlı alım satıma geçmeden önce kuralları burada deniyoruz.
 sanal_islem:
   aktif: true
+  # Dönem numarasını 1 artırınca sanal bakiye baştan başlar (eski sonuç özetlenip saklanır).
+  # Dönem 1 (21-26 Ekim): $200 -> $11.66, 48 işlem. Kaybın $168'i erken giriş + artthatfucks.
+  donem: 2
   baslangic_bakiye: 200       # sanal başlangıç bakiyesi ($)
   islem_tutari: 20            # her alım $20
   max_acik_pozisyon: 5        # aynı anda en fazla 5 açık pozisyon
@@ -77,8 +80,8 @@ sanal_islem:
   min_likidite: 10000         # likiditesi bunun altındaki coine girme (kayma çok yüksek olur)
   kaynaklar:                  # hangi sinyaller sanal alım tetiklesin
     tarama: true              # ana tarama sinyalleri
-    cuzdan: true              # takip edilen cüzdanların taze alımları
-    erken: true               # erken giriş kategorisi (bildirim kapalı olsa da)
+    cuzdan: true              # takip edilen cüzdanlar (ayrıca cüzdanda "sanal: true" gerekir)
+    erken: false              # KAPALI: dönem 1'de 9 işlemin 9'u zarar, 5'i rug (-$139)
   # Çıkış kuralları. Başlangıç değerleri 25 Eylül çıkış backtest'inin en iyi
   # kuralı (yine de ortalama -%40 çıkmıştı, bu yüzden önce sanal).
   kar_al_pct: 150             # fiyat girişin +%150'sine çıkınca sat
@@ -142,9 +145,11 @@ cuzdan_takip:
     - ad: CryptoKemal
       adres: Hpo766ufzaLce4FwvebarGDgFqMwnb2WKFkkUn7z3WLz
       bildir: true            # 5 kayıtta medyan +43% - az örnek, o yüzden ölçüm devam ediyor
+      sanal: true             # sanal işlem açsın (dönem 1: 1 işlem, +$0.76)
     - ad: artthatfucks
       adres: 5sAQHDFzem7erKy5u3H6zTU8dbrYjfkEzhgn3dnek5qe
       # bildir yok: sonuçları bizim taramamızdan iyi değil (%36 vs %39), sadece ölçülüyor
+      # sanal yok: dönem 1'de 8 işlem, 6 zarar, -$29
   lookback_hours: 12          # son kaç saatlik alımlara bakılsın (seyrek işlem yapanı kaçırmamak için)
   min_usd: 200                # bu tutarın altındaki alımlar ciddiye alınmaz
   mc_max: 5000000             # $5M üstü coinleri atla (bizim ilgi alanımız değil)

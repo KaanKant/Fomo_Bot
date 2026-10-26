@@ -48,6 +48,16 @@ def durum(cfg, state):
     """state['paper'] yoksa başlangıç bakiyesiyle kurar; gün sayaçlarını yeniler."""
     a = _ayar(cfg)
     p = state.setdefault("paper", {})
+    donem = int(a.get("donem", 1))
+    if p and int(p.get("donem", 1)) != donem:
+        # Yeni dönem: eski sonuçların özetini arşivle, sıfırdan başla
+        k = p.get("kapali", [])
+        state.setdefault("paper_arsiv", []).append({
+            "donem": p.get("donem", 1), "baslangic": p.get("baslangic"),
+            "bitis_bakiye": round(_f(p.get("bakiye")), 2), "islem": len(k),
+            "net": round(sum(_f(x.get("net")) for x in k), 2)})
+        state["paper"] = p = {}
+    p["donem"] = donem
     p.setdefault("bakiye", _f(a.get("baslangic_bakiye"), 200))
     p.setdefault("baslangic", p["bakiye"])
     p.setdefault("acik", [])
