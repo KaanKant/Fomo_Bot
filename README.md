@@ -25,8 +25,8 @@ Tüm eşikler `config.yaml` içinde, istediğin gibi değiştirebilirsin.
 
 Canlı alım satıma geçmeden önce kuralları denemek için bot, sinyalleri **sanal bakiyeyle** alıp satar. Gerçek para ve cüzdan kullanılmaz.
 
-- **Giriş:** Ana tarama sinyalleri, takip edilen cüzdanların taze (45 dakikadan yeni) alımları ve erken giriş kayıtları sanal $20'lık alım açar. Hangi kaynakların alım açacağı `config.yaml` içinde seçilir.
-- **Çıkış:** Her taramada kâr al (+%150), zarar kes (-%50) ve süre limiti (60 dk) kontrol edilir. Likidite çekilirse ya da coin listeden düşerse pozisyon satılamamış sayılır ve -%100 yazılır.
+- **Giriş:** Ana tarama sinyalleri, kırılım sinyalleri (en az 3 günlük coinlerde hacim kırılımı) ve `sanal: true` yazılan cüzdanların taze (45 dakikadan yeni) alımları sanal $20'lık alım açar. Erken giriş dönem 1'deki sonuçlar yüzünden kapalı. Hangi kaynakların alım açacağı `config.yaml` içinde seçilir.
+- **Çıkış (dönem 2):** Her taramada kâr al (+%100), zarar kes (-%25), izleyen stop (fiyat girişin üstüne çıktıysa zirveden %25 düşüş) ve süre limiti (12 saat) kontrol edilir. Kurallar kaynak bazında `sanal_islem.kurallar` ile değiştirilebilir. Likidite çekilirse ya da coin listeden düşerse pozisyon satılamamış sayılır ve -%100 yazılır.
 - **Maliyet:** Her yönde %1 ücret, %1 sabit kayma ve havuz derinliğine göre fiyat etkisi düşülür.
 - **Limitler:** Aynı anda en fazla 5 pozisyon, günde en fazla 10 alım. Günlük net zarar $60'ı geçerse o gün yeni alım açılmaz. Canlı bot da aynı limitlerle çalışacak.
 - **Rapor:** Günlük raporda sanal bakiye, kazanma oranı, kaynağa ve kapanış sebebine göre sonuçlar yer alır.

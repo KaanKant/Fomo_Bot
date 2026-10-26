@@ -603,6 +603,122 @@ def format_signal(chain, addr, m, sec, score=None, why=None):
     )
 
 
+# ------------------------------------------------------------------ kırılım
+def kirilim_adaylari(k):
+    """GeckoTerminal'de hacmi en yüksek havuzlar + son 1 saatin trendleri.
+    Yeni havuz listeleri bilerek kullanılmıyor: bu kaynak sadece eski coinlere bakar."""
+    found = {}
+    for chain in k.get("chains", ["solana"]):
+        network = GECKO_NETWORKS.get(chain)
+        if not network:
+            continue
+        istekler = [("pools", {"sort": "h24_volume_usd_desc", "page": s})
+                    for s in range(1, int(k.get("hacim_sayfa", 3)) + 1)]
+        istekler.append(("trending_pools", {"duration": "1h"}))
+        for path, params in istekler:
+            data = get_json(f"{GECKO}/networks/{network}/{path}", params=params,
+                            headers={"Accept": "application/json;version=20230302"})
+            for pool in (data or {}).get("data") or []:
+                rel = pool.get("relationships") or {}
+                base = (((rel.get("base_token") or {}).get("data") or {}).get("id") or "")
+                quote = (((rel.get("quote_token") or {}).get("data") or {}).get("id") or "")
+                base_addr = base.split("_", 1)[1] if "_" in base else ""
+                quote_addr = quote.split("_", 1)[1] if "_" in quote else ""
+                addr = quote_addr if base_addr.lower() in QUOTE_TOKENS else base_addr
+                if addr and addr.lower() not in QUOTE_TOKENS:
+                    add_candidate(found, chain, addr, "Kırılım")
+            time.sleep(2.1)  # ücretsiz limit: dakikada 30 istek
+    return [(c, a) for c, a, _ in found.values()]
+
+
+def kirilim_filtre(m, k):
+    """Eski, likit bir coinde hacim kırılımı: geçerse None, geçmezse sebep."""
+    if m["age_h"] is None or m["age_h"] < k.get("yas_min_gun", 3) * 24:
+        return "çok genç (kırılım sadece eski coinlere bakar)"
+    if m["age_h"] > k.get("yas_max_gun", 90) * 24:
+        return "çok yaşlı"
+    if not (k.get("mc_min", 300_000) <= m["mc"] <= k.get("mc_max", 30_000_000)):
+        return "MC aralık dışı"
+    if m["liq"] < k.get("liq_min", 50_000):
+        return "likidite düşük"
+    if m["liq_ratio"] < k.get("liq_to_mc_min", 0.05):
+        return "likidite/MC düşük"
+    if m["vol24"] < k.get("vol24_min", 100_000):
+        return "günlük hacim düşük"
+    if m.get("momentum", 0) < k.get("ivme_min", 2.5):
+        return "hacim kırılımı yok"
+    if not (k.get("chg1_min", 3) <= m["chg1"] <= k.get("chg1_max", 25)):
+        return "1s fiyat hareketi aralık dışı"
+    if not (k.get("chg24_min", -30) <= m["chg24"] <= k.get("chg24_max", 80)):
+        return "24s değişim aralık dışı"
+    if m["buys1"] + m["sells1"] < k.get("h1_txns_min", 50):
+        return "işlem sayısı düşük"
+    if m["buys1"] < k.get("alis_satis_min", 1.2) * max(m["sells1"], 1):
+        return "alış baskısı yetersiz"
+    if m["buys6"] + m["sells6"] > 0 and m["buys6"] < 0.9 * max(m["sells6"], 1):
+        return "6 saatlik satış baskısı"
+    return None
+
+
+def run_kirilim(cfg, state, dry_run=False):
+    """En az birkaç günlük, hayatta kalmış coinlerde hacim kırılımı arar."""
+    k = cfg.get("kirilim") or {}
+    if not k.get("aktif"):
+        return 0
+    now = time.time()
+    cooldown = k.get("cooldown_hours", 24) * 3600
+    seen = {x: t for x, t in state.get("seen_kirilim", {}).items() if now - t < cooldown}
+    state["seen_kirilim"] = seen
+
+    adaylar = [(c, a) for c, a in kirilim_adaylari(k) if now - seen.get(f"{c}:{a}", 0) >= cooldown]
+    reasons, gecen = {}, []
+    by_chain = {}
+    for c, a in adaylar:
+        by_chain.setdefault(c, []).append(a)
+    for chain, addrs in by_chain.items():
+        pairs = fetch_pairs(chain, addrs)
+        for addr in addrs:
+            p = pairs.get(addr)
+            if not p:
+                continue
+            m = market_metrics(p, now * 1000)
+            why = kirilim_filtre(m, k)
+            if why:
+                reasons[why] = reasons.get(why, 0) + 1
+                continue
+            gecen.append((chain, addr, m))
+    gecen.sort(key=lambda x: -x[2].get("momentum", 0))
+
+    acilan = 0
+    for chain, addr, m in gecen:
+        if acilan >= k.get("max_per_run", 2):
+            break
+        key = f"{chain}:{addr}"
+        sec, why = security_filter(chain, addr, cfg)
+        seen[key] = now
+        if why:
+            reasons[why] = reasons.get(why, 0) + 1
+            continue
+        m["sources"] = ["Kırılım"]
+        pros = [f"hacim ivmesi {m['momentum']:.1f}x", f"{age_text(m['age_h'])} yaşında"]
+        if sinyal_bildir(cfg):
+            send_telegram(format_signal(chain, addr, m, sec, None, pros), dry_run)
+        state.setdefault("signals", []).append({
+            "key": key, "chain": chain, "addr": addr, "symbol": m["symbol"],
+            "price": m["price"], "peak_price": m["price"], "mc": m["mc"], "ts": now,
+            "score": None, "sources": ["Kırılım"],
+        })
+        paper_ac(cfg, state, key, chain, addr, m["symbol"], m["price"], m["liq"], m["mc"],
+                 "kirilim", dry_run)
+        acilan += 1
+        time.sleep(0.5)
+
+    log(f"Kırılım: {len(adaylar)} aday, {len(gecen)} filtreyi geçti, {acilan} sinyal")
+    if reasons:
+        log("Kırılım elenme sebepleri:", json.dumps(reasons, ensure_ascii=False))
+    return acilan
+
+
 # ------------------------------------------------------------------ modlar
 def run_scan(cfg, state, dry_run=False):
     now = time.time()
@@ -1403,6 +1519,11 @@ def main():
             except Exception as e:
                 log("Sanal işlem takibi hata verdi:", e)
             run_scan(cfg, state, args.dry_run)
+            if (cfg.get("kirilim") or {}).get("aktif"):
+                try:
+                    run_kirilim(cfg, state, args.dry_run)
+                except Exception as e:
+                    log("Kırılım taraması hata verdi:", e)
             # takip edilen cüzdanların alımları (zincir üstü, herkese açık veri)
             if (cfg.get("cuzdan_takip") or {}).get("aktif"):
                 try:

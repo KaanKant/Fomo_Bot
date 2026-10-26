@@ -73,7 +73,7 @@ sanal_islem:
   donem: 2
   baslangic_bakiye: 200       # sanal başlangıç bakiyesi ($)
   islem_tutari: 20            # her alım $20
-  max_acik_pozisyon: 5        # aynı anda en fazla 5 açık pozisyon
+  max_acik_pozisyon: 8        # aynı anda en fazla 8 açık pozisyon (pozisyonlar artık saatlerce tutulabiliyor)
   gunluk_max_islem: 10        # günde en fazla 10 yeni alım
   gunluk_zarar_limiti: 60     # gün içinde net zarar $60'ı geçerse o gün yeni alım yok
   tekrar_giris_saat: 24       # aynı coine 24 saat içinde tekrar girme
@@ -81,12 +81,19 @@ sanal_islem:
   kaynaklar:                  # hangi sinyaller sanal alım tetiklesin
     tarama: true              # ana tarama sinyalleri
     cuzdan: true              # takip edilen cüzdanlar (ayrıca cüzdanda "sanal: true" gerekir)
+    kirilim: true             # eski coinlerde hacim kırılımı (dönem 2'de eklendi)
     erken: false              # KAPALI: dönem 1'de 9 işlemin 9'u zarar, 5'i rug (-$139)
-  # Çıkış kuralları. Başlangıç değerleri 25 Eylül çıkış backtest'inin en iyi
-  # kuralı (yine de ortalama -%40 çıkmıştı, bu yüzden önce sanal).
-  kar_al_pct: 150             # fiyat girişin +%150'sine çıkınca sat
-  zarar_kes_pct: -50          # fiyat girişin -%50'sine düşünce sat
-  max_sure_dk: 60             # 60 dakika sonra ne olursa olsun sat
+  # Çıkış kuralları (dönem 2). Dönem 1'de sabit 60 dk tutmak taramada başa baş
+  # çıkmıştı; aynı işlemlerin fiyat geçmişinde izleyen stop daha iyi görünüyordu
+  # (30 işlem, az örnek). Şimdi canlı fiyatla deniyoruz.
+  kar_al_pct: 100             # +%100'de sat (boş bırakılırsa kâr al yok)
+  zarar_kes_pct: -25          # girişin -%25 altına düşerse sat
+  iz_stop_pct: 25             # fiyat girişin üstüne çıktıysa: gördüğü zirveden %25 düşünce sat
+  max_sure_dk: 720            # en fazla 12 saat tut
+  # Kaynağa özel kurallar yukarıdakileri ezer. Örnek:
+  # kurallar:
+  #   tarama: {max_sure_dk: 60, iz_stop_pct: null}
+  kurallar: {}
   # Maliyet modeli (her yön için)
   ucret_pct: 1.0              # DEX + aggregator + priority fee toplamı
   slippage_taban_pct: 1.0     # sabit kayma; üstüne havuz derinliğine göre fiyat etkisi eklenir
@@ -131,6 +138,32 @@ erken:
   max_alerts_per_run: 1       # taramada en fazla 1 erken giriş bildirimi
   max_alerts_per_day: 10      # günde en fazla 10 erken giriş bildirimi (spam kalkanı)
   cooldown_hours: 12          # aynı coin 12 saat içinde tekrar bildirilmez
+
+# --- KIRILIM (eski coinlerde hacim kırılımı) ---------------
+# Dönem 1'deki rug'ların hepsi birkaç saatlik coinlerdendi. Bu kaynak sadece
+# en az 3 günlük, likiditesi oturmuş coinlere bakar ve hacmin aniden
+# arttığı, fiyatın yükselişin BAŞINDA olduğu anı arar.
+# Güvenlik kontrolü ana taramayla aynı (RugCheck / GoPlus, holder, top10).
+kirilim:
+  aktif: true
+  chains: [solana]
+  hacim_sayfa: 3              # GeckoTerminal'de hacme göre sıralı kaç sayfa havuz taransın (sayfa başı 20)
+  yas_min_gun: 3              # en az 3 günlük
+  yas_max_gun: 90
+  mc_min: 300000              # $300K
+  mc_max: 30000000            # $30M
+  liq_min: 50000              # en az $50K likidite (kayma düşük olsun)
+  liq_to_mc_min: 0.05
+  vol24_min: 100000
+  ivme_min: 2.5               # son 1 saatlik hacim, 24 saatlik ortalamanın en az 2.5 katı
+  chg1_min: 3                 # son 1 saatte en az +%3 (kırılım başlamış)
+  chg1_max: 25                # ama +%25'ten fazla değil (dikey yükselişe geç kalma)
+  chg24_min: -30
+  chg24_max: 80               # 24 saatte zaten %80'den fazla uçmuşsa atla
+  h1_txns_min: 50
+  alis_satis_min: 1.2         # son 1 saatte alış sayısı satışın en az 1.2 katı
+  max_per_run: 2              # taramada en fazla 2 yeni sinyal
+  cooldown_hours: 24          # aynı coine 24 saat içinde tekrar bakma
 
 # --- CÜZDAN TAKİBİ (zincir üstü, herkese açık veri) -----------
 # FOMO'da öne çıkan trader'ların cüzdan adresleri. Bot bu cüzdanların

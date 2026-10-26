@@ -26,7 +26,8 @@ import time
 from datetime import datetime, timedelta, timezone
 
 ZINCIR = {"solana": "Solana", "bsc": "BNB Chain", "base": "Base", "ethereum": "Ethereum"}
-SEBEP = {"kar": "kâr al", "zarar": "zarar kes", "sure": "süre doldu", "rug": "rug / likidite yok"}
+SEBEP = {"kar": "kâr al", "zarar": "zarar kes", "iz": "izleyen stop", "sure": "süre doldu",
+         "rug": "rug / likidite yok"}
 
 
 def _f(x, d=0.0):
@@ -38,6 +39,16 @@ def _f(x, d=0.0):
 
 def _ayar(cfg):
     return cfg.get("sanal_islem") or {}
+
+
+def kurallar(cfg, kaynak):
+    """Genel çıkış kuralları, kaynağa özel ayar varsa onunla ezilmiş hali."""
+    a = _ayar(cfg)
+    tur = kaynak.split(":")[0].replace("ü", "u")
+    r = {"kar_al_pct": a.get("kar_al_pct"), "zarar_kes_pct": a.get("zarar_kes_pct", -50),
+         "iz_stop_pct": a.get("iz_stop_pct"), "max_sure_dk": a.get("max_sure_dk", 60)}
+    r.update((a.get("kurallar") or {}).get(tur) or {})
+    return r
 
 
 def _bugun():
@@ -157,9 +168,6 @@ def tick(cfg, state, fetch_pairs, notify=None, log=print, now=None):
         for addr, pair in (fetch_pairs(chain, list(dict.fromkeys(addrs))) or {}).items():
             pairs[(chain, addr)] = pair
 
-    tp = _f(a.get("kar_al_pct"), 150)
-    sl = _f(a.get("zarar_kes_pct"), -50)
-    sure = _f(a.get("max_sure_dk"), 60)
     rug_liq = _f(a.get("rug_likidite_min"), 1000)
 
     kapanan, kalan = 0, []
@@ -186,12 +194,16 @@ def tick(cfg, state, fetch_pairs, notify=None, log=print, now=None):
                 x["kayip_okuma"] = 0
                 x["son_fiyat"] = fiyat
                 x["zirve"] = max(_f(x.get("zirve")), fiyat)
+                r = kurallar(cfg, x["kaynak"])
                 degisim = (fiyat / x["fiyat"] - 1) * 100
-                if degisim >= tp:
+                dusus = (1 - fiyat / x["zirve"]) * 100 if x["zirve"] else 0
+                if r.get("kar_al_pct") is not None and degisim >= _f(r["kar_al_pct"]):
                     sebep = "kar"
-                elif degisim <= sl:
+                elif r.get("zarar_kes_pct") is not None and degisim <= _f(r["zarar_kes_pct"]):
                     sebep = "zarar"
-                elif (now - x["ts"]) / 60 >= sure:
+                elif r.get("iz_stop_pct") and x["zirve"] > x["fiyat"] and dusus >= _f(r["iz_stop_pct"]):
+                    sebep = "iz"
+                elif (now - x["ts"]) / 60 >= _f(r.get("max_sure_dk"), 60):
                     sebep = "sure"
         if sebep:
             _kapat(cfg, p, x, sebep, fiyat, liq, now, notify, log)
@@ -299,7 +311,18 @@ def rapor_satirlari(cfg, state, now=None):
         en = sorted(p["atlanan"].items(), key=lambda kv: -kv[1])[:3]
         satir.append("Atlanan alımlar: " + ", ".join(f"{k} ({v})" for k, v in en))
         p["atlanan"] = {}          # rapor başına sıfırla
-    satir.append(f"<i>Kurallar: kâr al +%{_f(a.get('kar_al_pct'), 150):.0f}, zarar kes "
-                 f"%{_f(a.get('zarar_kes_pct'), -50):.0f}, en fazla {_f(a.get('max_sure_dk'), 60):.0f} dk, "
+    def kural_metni(r):
+        parca = []
+        if r.get("kar_al_pct") is not None:
+            parca.append(f"kâr al +%{_f(r['kar_al_pct']):.0f}")
+        if r.get("zarar_kes_pct") is not None:
+            parca.append(f"zarar kes %{_f(r['zarar_kes_pct']):.0f}")
+        if r.get("iz_stop_pct"):
+            parca.append(f"zirveden -%{_f(r['iz_stop_pct']):.0f} izleyen stop")
+        parca.append(f"en fazla {_f(r.get('max_sure_dk'), 60) / 60:.0f} saat")
+        return ", ".join(parca)
+    satir.append(f"<i>Dönem {p.get('donem', 1)} | {kural_metni(kurallar(cfg, 'genel'))} | "
                  f"işlem başı ${_f(a.get('islem_tutari'), 20):.0f}, ücret ve kayma dahil.</i>")
+    for ar in state.get("paper_arsiv", [])[-2:]:
+        satir.append(f"<i>Dönem {ar['donem']}: {ar['islem']} işlem, net {ar['net']:+.0f}$</i>")
     return satir
